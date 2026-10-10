@@ -1,23 +1,27 @@
 # PetCare
 
-PetCare es un prototipo móvil para consultar y registrar mascotas. El avance integra componentes funcionales de React Native, hooks, consumo de una API pública y persistencia local con AsyncStorage.
+PetCare es un prototipo móvil para registrar cuidados de mascotas. Integra componentes funcionales de React Native, hooks, consumo de una API pública, persistencia local y funciones nativas opcionales. El contexto académico parte de la veterinaria Pet Spaw, identificada por el equipo mediante [su ficha compartida de Google Maps](https://maps.app.goo.gl/pdjydh5rFumceGi19); confirmar con la clínica su ubicación administrativa, necesidades y autorización para usarla en el informe antes de atribuirle datos institucionales.
 
 ## Funcionalidades implementadas
 
-- Acceso de demostración usando un correo electrónico; no existe autenticación real ni se guarda una contraseña.
-- Listado, detalle y registro de mascotas.
-- Recuperación y persistencia local de la sesión de demostración y de la lista de mascotas.
+- Acceso de demostración por correo; no existe autenticación real ni se guarda una contraseña.
+- Listado, detalle, alta y edición local de mascotas.
 - Resumen de cantidades de perros y gatos.
-- Sección «Descubre perros», que consulta imágenes aleatorias y razas en Dog CEO.
-- Estados visibles de carga, error, reintento y respuesta vacía para la consulta de la API.
-- Las secciones Agenda, Actividades y Lugares continúan siendo pantallas provisionales.
+- Persistencia de sesión, mascotas, recordatorios y metadatos opcionales de foto/ubicación con AsyncStorage.
+- Sección «Descubre perros», conectada a Dog CEO y con estados de carga, error, reintento y respuesta vacía.
+- Agenda de cuidados para crear, persistir y cancelar notificaciones locales programadas.
+- Captura puntual de ubicación GPS en primer plano, con apertura de coordenadas en un mapa externo.
+- Captura o selección de foto; se copia al almacenamiento privado de la aplicación.
+- Lectura del acelerómetro en Actividades; la suscripción se libera al salir de la pantalla.
+- Lugares sigue siendo una pantalla provisional; no afirma ni consulta veterinarias cercanas.
 
 ## Tecnologías
 
-- React Native y Expo SDK 57.
-- React 19.
+- React Native, React 19 y Expo SDK 57.
 - AsyncStorage para datos locales no sensibles.
 - `fetch` y la API pública [Dog CEO](https://dog.ceo/dog-api/).
+- `expo-image-picker`, `expo-location`, `expo-notifications`, `expo-sensors` y `expo-file-system`.
+- EAS Build, con perfil interno para APK Android.
 - JavaScript y estilos con `StyleSheet`.
 
 ## Requisitos y ejecución
@@ -31,7 +35,7 @@ npm start
 
 En la terminal de Expo, escanea el QR con Expo Go o elige una plataforma. También están disponibles `npm run android`, `npm run ios` y `npm run web`.
 
-La sección de descubrimiento necesita conexión a Internet. La lista de mascotas y la sesión guardadas pueden recuperarse localmente.
+La sección de descubrimiento necesita Internet. Las funciones nativas de cámara, GPS, acelerómetro y notificaciones se deben validar en una compilación móvil; algunas no están disponibles en navegador ni necesariamente en Expo Go para todos los módulos del SDK.
 
 ## Organización básica
 
@@ -39,17 +43,20 @@ La sección de descubrimiento necesita conexión a Internet. La lista de mascota
 App.js
 src/
   components/     Componentes de presentación, tarjetas y descubrimiento
-  data/           Datos de ejemplo y elementos de navegación
+  data/           Datos iniciales y validaciones
   hooks/          Hooks para consumo de datos remotos
-  screens/        Pantallas de acceso, inicio, perfil y mascotas
+  screens/        Acceso, inicio, agenda, actividades, perfil y mascotas
+  services/       Cámara, ubicación y notificaciones locales
   theme/          Colores compartidos
+tests/              Pruebas de validación y reglas de dominio
+docs/               Guía de memoria APF2
 ```
 
-`App.js` coordina la carga inicial y el estado compartido. Las pantallas reciben datos y acciones mediante props. La navegación actual se controla con estado local (`view` y `activeTab`); las pestañas Agenda, Actividades y Lugares son provisionales.
+`App.js` coordina carga, estado compartido, persistencia y selección de pantallas. La navegación actual usa estado (`view` y `activeTab`); todavía no usa Stack/Tabs/Drawer de React Navigation.
 
 ## API: Dog CEO
 
-La app solicita `GET https://dog.ceo/api/breeds/image/random/6`. La respuesta esperada tiene este formato:
+La app solicita `GET https://dog.ceo/api/breeds/image/random/6`. La respuesta esperada es:
 
 ```json
 {
@@ -60,28 +67,61 @@ La app solicita `GET https://dog.ceo/api/breeds/image/random/6`. La respuesta es
 }
 ```
 
-El hook `src/hooks/useDogImages.js` comprueba el estado HTTP y la forma de la respuesta, limita las imágenes a URLs HTTPS de Dog CEO y expone carga, error, datos y reintento. `src/components/DogDiscoverySection.js` presenta las imágenes y deriva el nombre de raza de la URL. Si la API no está disponible, la app muestra un mensaje y permite reintentar; los datos personales locales no dependen de esta petición.
+`src/hooks/useDogImages.js` comprueba HTTP, valida el cuerpo mediante `src/data/petcareValidation.js` y limita las imágenes a URLs HTTPS de Dog CEO. `src/components/DogDiscoverySection.js` muestra las imágenes y deriva el nombre de raza de la URL. Si la API no está disponible, informa el error y ofrece reintentar. Este endpoint sirve para descubrimiento de razas; no es un backend ni sincroniza los perfiles de las mascotas.
 
-## Persistencia local
+## Persistencia y privacidad
 
-AsyncStorage usa estas claves versionadas:
+AsyncStorage usa las claves versionadas:
 
 - `@petcare/session:v1`: nombre derivado del correo y correo de la sesión de demostración.
-- `@petcare/pets:v1`: lista serializada de mascotas.
+- `@petcare/pets:v1`: mascotas, URI de la foto copiada al directorio privado y coordenadas guardadas a solicitud.
+- `@petcare/reminders:v1`: recordatorios y el identificador de su notificación local.
 
-La app recupera y valida los datos al iniciar. Si no hay una lista guardada, muestra los datos de ejemplo. La contraseña no se solicita ni se almacena. AsyncStorage no cifra la información y no debe usarse para credenciales, tokens ni datos sensibles.
+La aplicación recupera y valida los datos al iniciar; si todavía no hay una lista de mascotas guardada, muestra datos de ejemplo. AsyncStorage no cifra la información: no almacenar contraseñas, tokens ni datos sensibles. La ubicación es de una sola captura con permiso en primer plano, no se rastrea ni se envía a un servidor.
 
-## Validación manual y evidencias
+La cámara, fotos, ubicación y notificaciones solicitan permiso en el momento de usar cada función. La agenda programa avisos en el dispositivo y no proporciona notificaciones push remotas. El acelerómetro muestra datos técnicos y no determina la actividad ni el estado de salud de una mascota.
 
-1. Inicia la app, ingresa un correo válido y confirma que abre el inicio.
-2. Agrega una mascota, revisa que aparezca en la lista y abre su detalle.
-3. Cierra y vuelve a abrir la app; verifica que se mantengan la sesión y la mascota.
-4. Cierra sesión y confirma que la siguiente apertura solicita el correo otra vez.
-5. Con Internet, comprueba la carga de imágenes y los nombres de raza. Sin conexión, comprueba el mensaje de error y el reintento.
-6. Captura pantallas reales de esas pruebas y conserva la respuesta observada de la API. No se incluyen capturas, APK ni resultados de pruebas en dispositivo porque todavía deben generarse y verificarse.
+No se solicita permiso de micrófono ni almacenamiento externo; los permisos heredados que no requiere este flujo se bloquean en el manifiesto nativo.
 
-La guía de capítulos, requerimientos y evidencias para la memoria está en [docs/GUIA-INFORME-APF2.md](./docs/GUIA-INFORME-APF2.md).
+## Pruebas y validación
+
+```sh
+npm test
+npx expo install --check
+npx expo export --platform web
+```
+
+Las pruebas automatizadas cubren formatos de sesión, mascotas y agenda, filtrado de la respuesta de la API y fechas futuras. La exportación web verifica el empaquetado JS, pero no sustituye una build ni las pruebas nativas.
+
+Pruebas manuales pendientes de documentar con dispositivo, fecha y evidencia:
+
+1. Acceso válido/inválido y navegación de regreso.
+2. Alta, edición, detalle y persistencia de mascotas tras reiniciar.
+3. Respuesta de Dog CEO en éxito, carga, error/reintento y lista vacía.
+4. Permiso concedido y denegado en cámara/fotos/ubicación.
+5. Captura GPS, coordenadas guardadas y apertura del mapa externo.
+6. Recordatorio futuro recibido y cancelación del aviso pendiente.
+7. Lectura del acelerómetro y liberación de la suscripción al abandonar la pantalla.
+8. Instalación del APK en un dispositivo y evidencia de almacenamiento local.
+
+No se deben reportar estos pasos como resultados observados hasta ejecutarlos y conservar capturas/registros reales.
+
+## Perfil APK con EAS Build
+
+`eas.json` define el perfil Android `preview` con distribución interna y salida APK. El identificador provisional es `com.petcare.aplicacionesmoviles`: confirmar su disponibilidad y acordar el identificador final antes de publicar.
+
+Para generar el APK se necesita una cuenta de Expo del equipo y vincular el proyecto:
+
+```sh
+npx eas-cli login
+npx eas-cli init
+npx eas-cli build --platform android --profile preview
+```
+
+La configuración no significa que el APK ya se haya generado. Después del build, descargarlo, probarlo en un teléfono y añadir a la memoria el enlace Expo.dev y evidencias reales.
 
 ## Alcance y pendientes
 
-El inicio de sesión es únicamente una demostración local; no valida identidad ni ofrece sincronización entre dispositivos. No se han implementado backend, calendario funcional, edición/eliminación de mascotas, GPS, cámara, sensores, notificaciones push ni publicación/APK con EAS Build. Esas funciones requieren decisiones de alcance, permisos, configuración y pruebas adicionales; no deben presentarse como resultados ya obtenidos.
+La autenticación es una demostración local; no valida identidad ni sincroniza dispositivos. No hay backend ni agenda de citas sincronizada; Agenda usa notificaciones locales. Lugares es provisional y todavía no integra una API de veterinarias. El informe necesita misión, visión, historia, organigrama, recursos y cronograma validados directamente con Pet Spaw. No existe aún un APK EAS ni evidencia de prueba física.
+
+La guía de memoria está en [docs/GUIA-INFORME-APF2.md](./docs/GUIA-INFORME-APF2.md).

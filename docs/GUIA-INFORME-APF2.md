@@ -1,170 +1,296 @@
-# Guía para la memoria del proyecto PetCare (2026)
+# Memoria del proyecto PetCare - APF2 (2026)
 
-Esta guía organiza el índice solicitado y separa lo comprobable en el código de la información que el equipo debe completar. Sustituye los textos entre corchetes con datos verificados; no presentes como evidencia capturas, entrevistas, pruebas, sensores o APK que no se hayan realizado.
+Esta guía desarrolla el índice académico solicitado con base en lo que el repositorio implementa y evidencia disponible. No reemplaza la entrevista ni la autorización de la organización. Donde los datos institucionales aún no han sido facilitados, se indica qué debe verificarse antes de presentar el informe.
 
 ## Introducción
 
-Presentar el propósito de PetCare, el contexto de la experiencia curricular y el alcance real del prototipo. Indicar que el avance demuestra hooks, una API pública y persistencia local.
+PetCare es un prototipo de aplicación móvil orientado al registro local de información básica y cuidados de mascotas. El avance integra hooks de React, consulta de una API pública de imágenes caninas, estados de carga y error, persistencia local con AsyncStorage y funciones del dispositivo de uso opcional.
+
+La organización propuesta por el equipo es **Pet Spaw - Spa y Dermatología Veterinaria**, a partir del enlace de Google Maps compartido por el equipo: [ficha de Pet Spaw](https://maps.app.goo.gl/pdjydh5rFumceGi19). El distrito, la dirección, la historia y la estructura institucional deben confirmarse con la veterinaria. La app es una propuesta académica; no se afirma que la organización haya solicitado, aprobado o desplegado el producto.
 
 ## Índice
 
 1. Capítulo I: Aspectos de la organización
+   1.1 Visión
+   1.2 Misión
+   1.3 Reseña histórica
+   1.4 Organigrama
+   1.5 Ámbito del proyecto
+   1.6 Descripción de funciones y procesos del negocio
 2. Capítulo II: Aspectos del proyecto
+   2.1 Análisis situacional
+   2.2 Formulación del problema
+   2.3 Objetivos
+   2.4 Fundamentación teórica
 3. Capítulo III: Método de desarrollo del producto observable
+   3.1 Análisis de requerimientos
+   3.2 Diseño
+   3.3 Desarrollo
+   3.4 Pruebas
 4. Capítulo IV: Resultados
 5. Capítulo V: Conclusiones
 6. Capítulo VI: Recomendaciones
 
-## 1. Capítulo I: Aspectos de la organización
+# 1. Capítulo I: Aspectos de la organización
 
-Completar esta sección con información de la organización real donde se aplicará el proyecto. El repositorio no identifica una organización, por lo que no se deben inventar su historia, misión, visión ni estructura.
+## 1.1 Visión
 
-### 1.1 Visión
+**Pendiente de validación:** solicitar a Pet Spaw su visión institucional oficial. La ficha de ubicación compartida no contiene una declaración institucional verificada. No atribuir a la veterinaria una frase redactada por el equipo.
 
-[Visión oficial de la organización y fuente.]
+## 1.2 Misión
 
-### 1.2 Misión
+**Pendiente de validación:** solicitar a Pet Spaw su misión oficial. Hasta recibir una fuente institucional o validación de su representante, no consignar una misión como cita de la empresa.
 
-[Misión oficial de la organización y fuente.]
+## 1.3 Reseña histórica
 
-### 1.3 Reseña histórica
+La organización seleccionada es Pet Spaw, descrita en la ficha compartida como “Spa y Dermatología Veterinaria”. **La fecha de fundación, hitos, fundadores y trayectoria no aparecen verificados en los datos entregados**. Completar mediante entrevista a un representante o fuente oficial, incluyendo fecha de consulta.
 
-[Reseña respaldada por información institucional.]
+## 1.4 Organigrama
 
-### 1.4 Organigrama
+**Pendiente de validación con Pet Spaw.** Solicitar el organigrama vigente o autorización para elaborar uno simplificado. No inferir cargos, nombres ni líneas de reporte a partir de la ficha pública.
 
-[Insertar organigrama vigente y citar la fuente.]
+## 1.5 Ámbito del proyecto
 
-### 1.5 Ámbito del proyecto
+- **Organización propuesta:** Pet Spaw - Spa y Dermatología Veterinaria.
+- **Ubicación:** Lima, según lo indicado por el equipo; validar dirección y distrito exactos con la veterinaria. La fuente compartida es la [ficha de Google Maps](https://maps.app.goo.gl/pdjydh5rFumceGi19).
+- **Área de aplicación propuesta:** registro de mascotas y recordatorios de cuidado veterinario. Confirmar con la administración si estos procesos son pertinentes y si se realizará una prueba del prototipo.
+- **Recursos humanos:** completar con nombres y roles reales del equipo del curso, asesor y representante/usuarios de la clínica que acepten participar. Actualmente no se han proporcionado nombres.
+- **Software:** React Native 0.86, React 19, Expo SDK 57, AsyncStorage, Dog CEO API, Expo Image Picker, Location, Notifications, Sensors y EAS Build. Node.js/npm para desarrollo.
+- **Hardware:** desarrollo verificado en navegador de escritorio; modelo de teléfono, versión de Android/iOS y pruebas físicas todavía pendientes de registrar.
+- **Cronograma:** adaptar al cronograma real del curso. Modelo editable:
 
-- **Área de aplicación:** [área y responsable que validan el problema].
-- **Recursos humanos:** [integrantes, funciones, asesor y usuarios participantes].
-- **Software:** React Native, Expo SDK 57, AsyncStorage y API pública Dog CEO. Añadir las herramientas efectivamente usadas.
-- **Hardware:** [dispositivos disponibles y especificaciones verificadas].
-- **Cronograma:** [actividades, fechas reales, responsables y estado].
+| Actividad | Responsable | Inicio/fin real | Estado/evidencia |
+|---|---|---|---|
+| Validación del problema y alcance con Pet Spaw | [integrante] | [fechas] | Pendiente de entrevista/autorización |
+| Requisitos y diseño de pantallas | [integrante] | [fechas] | [completar] |
+| Implementación de hooks, API y estados | [integrante] | [fechas] | Implementado en el prototipo; validar |
+| Persistencia, agenda y capacidades nativas | [integrante] | [fechas] | Implementado; prueba física pendiente |
+| Pruebas, capturas y APK interno | [integrante] | [fechas] | Pendiente |
+| Revisión y entrega de memoria | [integrante] | [fechas] | [completar] |
 
-### 1.6 Descripción de funciones y procesos del negocio
+## 1.6 Descripción de funciones y procesos del negocio
 
-[Describir el proceso actual de registro y seguimiento de mascotas según observación o entrevista. El prototipo permite registrar datos básicos y consultar una lista; no gestiona todavía citas reales.]
+La ficha compartida identifica servicios de spa y dermatología veterinaria. El proceso de atención, registro de pacientes, programación de citas y seguimiento **no ha sido observado ni descrito por la organización**. Documentar el flujo real mediante entrevista/observación autorizada antes de atribuirlo a Pet Spaw.
 
-## 2. Capítulo II: Aspectos del proyecto
+Como propuesta de alcance del prototipo, PetCare permite crear y editar fichas locales de mascotas, consultar datos básicos, guardar opcionalmente una foto/ubicación y crear recordatorios locales de cuidado. No administra citas de la clínica, historias clínicas, pagos ni información de clientes en un servidor.
 
-### 2.1 Análisis situacional
+# 2. Capítulo II: Aspectos del proyecto
 
-[Documentar el proceso actual, usuarios, dificultades y fuentes de información. Validar con la organización o usuarios antes de afirmar que existe un problema observado.]
+## 2.1 Análisis situacional
 
-### 2.2 Formulación del problema
+**Hipótesis de trabajo por validar con Pet Spaw:** un registro local puede servir para demostrar cómo organizar datos básicos de mascotas y recordar actividades de cuidado. No se recibió evidencia de que la clínica tenga actualmente un problema de pérdida de datos, citas incumplidas o ausencia de sistemas.
 
-- **Problema general:** [redactar después de validar el contexto].
-- **Problemas específicos:** [enumerar necesidades verificadas].
+Antes de presentar el análisis como diagnóstico, realizar y documentar: (a) entrevista al responsable autorizado, (b) proceso actual y herramientas usadas, (c) necesidades/prioridades, (d) restricciones de privacidad y uso de datos, (e) alcance aprobado. Evitar recopilar datos personales o clínicos reales en el prototipo sin autorización y medidas adecuadas.
 
-### 2.3 Objetivos del proyecto
+## 2.2 Formulación del problema
 
-- **Objetivo general:** Desarrollar un prototipo móvil para registrar y consultar información básica de mascotas, integrando persistencia local y consumo de una API pública.
-- **Objetivos específicos:** Implementar interfaz funcional con hooks; persistir sesión de demostración y mascotas con AsyncStorage; consumir y presentar imágenes de Dog CEO; comunicar estados de carga y error.
+- **Problema general (propuesta académica):** ¿Cómo puede un prototipo móvil demostrar el registro y consulta local de información básica de mascotas y apoyar recordatorios de cuidado, con consulta de datos de una API pública?
+- **Problemas específicos (requisitos del prototipo, no hallazgos atribuidos a Pet Spaw):**
+  1. ¿Cómo organizar una lista de mascotas y conservarla entre aperturas sin backend?
+  2. ¿Cómo consultar y presentar datos remotos con estados de carga, error y respuesta vacía?
+  3. ¿Cómo comunicar en la interfaz el registro de una mascota y los recordatorios locales?
+  4. ¿Cómo solicitar permisos de cámara, fotos y ubicación solo al activar la función correspondiente?
 
-### 2.4 Fundamentación teórica
+Reformular las preguntas si la entrevista valida un problema operacional específico de la clínica.
 
-Explicar React Native y Expo como tecnologías de interfaz y ejecución móvil; `useState` para estado local, `useEffect` para carga y persistencia sincronizada con el ciclo de vida, AsyncStorage como almacenamiento clave-valor no cifrado, APIs REST/JSON y `fetch` para solicitudes HTTP. Relacionar cada concepto con su uso real en PetCare.
+## 2.3 Objetivos del proyecto
 
-GPS, cámara, acelerómetro, permisos, notificaciones y EAS Build pueden describirse como conceptos futuros, pero **no están implementados en este avance**.
+### 2.3.1 Objetivo general
 
-## 3. Capítulo III: Método de desarrollo del producto observable
+Desarrollar y validar un prototipo móvil para registrar información básica de mascotas, consultarla localmente y programar recordatorios de cuidado, integrando hooks de React Native, una API pública y AsyncStorage.
 
-### 3.1 Análisis de requerimientos
+### 2.3.2 Objetivos específicos
 
-**Requerimientos funcionales implementados**
+1. Implementar interfaz con `useState` y efectos ligados al ciclo de vida mediante `useEffect`.
+2. Consultar Dog CEO y presentar imágenes con carga, error, reintento y estado vacío.
+3. Persistir y validar sesión de demostración, mascotas y recordatorios usando AsyncStorage.
+4. Implementar captura opcional de foto, ubicación puntual y lectura del acelerómetro, solicitando permisos/activación de forma explícita.
+5. Definir un perfil EAS para APK interno y ejecutar pruebas en dispositivo antes de reportar un build como resultado.
 
-1. Ingresar al prototipo con un correo válido en modo de demostración.
-2. Consultar la lista y el detalle de las mascotas de ejemplo o guardadas.
-3. Registrar una mascota con nombre y raza obligatorios y datos adicionales opcionales.
-4. Guardar y recuperar la sesión de demostración y las mascotas localmente.
-5. Solicitar y mostrar hasta seis imágenes aleatorias de Dog CEO.
-6. Mostrar carga, error, reintento y respuesta sin imágenes en la sección de descubrimiento.
+## 2.4 Fundamentación teórica
 
-**Requerimientos no funcionales implementados o verificables**
+- **React Native:** framework de interfaz móvil basado en componentes, usado para construir las pantallas del prototipo.
+- **Expo:** plataforma de herramientas y módulos nativos; la app usa Expo SDK 57.
+- **Hooks:** `useState` mantiene estado de formularios, sesión y datos; `useEffect` inicia/limpia la lectura del sensor y sincroniza datos persistentes; `useCallback` conserva la función de carga.
+- **AsyncStorage:** almacenamiento local clave-valor no cifrado. Se usa para datos de demostración no sensibles, no para contraseñas ni tokens.
+- **API REST/JSON:** Dog CEO sirve imágenes de perros mediante `GET https://dog.ceo/api/breeds/image/random/6`, con respuesta `message` (URLs) y `status`. `fetch`, control HTTP y validación de forma procesan el resultado.
+- **Permisos y cámara:** Expo Image Picker solicita permiso cuando la persona elige tomar o seleccionar una foto; la imagen seleccionada se copia al directorio privado de la app.
+- **GPS:** Expo Location solicita permiso de primer plano bajo demanda, obtiene una única coordenada y no realiza seguimiento en segundo plano.
+- **Notificaciones:** Expo Notifications programa y cancela avisos locales para una fecha futura. No hay envío push desde un servidor.
+- **Acelerómetro:** Expo Sensors expone lecturas X/Y/Z mientras Actividades está montada; no son datos clínicos ni actividad de la mascota.
+- **EAS Build:** `eas.json` configura el perfil Android `preview` con distribución interna APK. La configuración por sí sola no produce un APK ni evidencia instalación.
 
-- Presentación móvil adaptable mediante componentes de React Native.
-- Validación de campos requeridos y del correo de demostración.
-- Validación de formato de datos recuperados antes de mostrarlos.
-- Mensajes visibles ante fallos de lectura, escritura o API.
-- No almacenar contraseñas; la sesión de demostración no es autenticación.
+# 3. Capítulo III: Método de desarrollo del producto observable
 
-**No implementado:** sincronización remota, seguridad/autenticación de cuentas, gestión real de citas, sensores, permisos, notificaciones, pruebas automatizadas y publicación.
+## 3.1 Análisis de requerimientos
 
-### 3.2 Diseño
+### Requerimientos funcionales implementados
 
-- **Arquitectura:** interfaz móvil con estado coordinado en `App.js`, pantallas/componentes en `src/`, almacenamiento AsyncStorage y API externa Dog CEO. No hay backend propio.
-- **Navegación:** selección de pantallas por estado (`view`) y barra inferior. Agenda, Actividades y Lugares presentan avisos provisionales; no se usa actualmente Stack/Tabs/Drawer de React Navigation.
-- **Diseño visual:** estilos con `StyleSheet`; registrar aquí mockups y capturas creados por el equipo.
+1. Iniciar sesión de demostración con un correo válido; cerrar sesión elimina el perfil local.
+2. Consultar lista, métricas y detalle de mascotas; crear y editar una ficha local.
+3. Persistir y recuperar sesión demo, mascotas, fotos/ubicación opcionales y agenda con AsyncStorage.
+4. Consultar hasta seis imágenes aleatorias de Dog CEO y presentarlas con el nombre derivado de la raza.
+5. Comunicar carga, error, reintento y respuesta válida sin imágenes de la API.
+6. Programar y cancelar recordatorios locales con selección de mascota, motivo, fecha y hora.
+7. Solicitar acceso a cámara/fotos solo desde los controles de imagen; solicitar ubicación al pedir una captura puntual.
+8. Mostrar las coordenadas guardadas en el detalle y ofrecer abrirlas en un mapa externo.
+9. Mostrar lecturas del acelerómetro en la pantalla Actividades y liberar la suscripción al salir.
 
-### 3.3 Desarrollo
+### Requerimientos no funcionales implementados o pendientes
 
-Describir instalación con `npm ci` y ejecución con `npm start`. Explicar la carga y escritura mediante `useEffect`, los estados mediante `useState`, el formulario de alta y el hook `src/hooks/useDogImages.js`.
+- Validación de formatos de datos persistidos, correo de demostración, campos obligatorios y fecha/hora futura.
+- Mensajes visibles y tratamiento de errores de carga, API, permisos, agenda y almacenamiento.
+- No guardar credenciales; pedir permisos nativos solo al usar capacidades relacionadas.
+- Interfaz adaptable de React Native; navegación actual basada en estado, no en Stack/Tabs/Drawer.
+- **Pendiente:** evaluar accesibilidad, rendimiento en dispositivos objetivo, privacidad con la organización, backend/autenticación real y pruebas en dispositivos representativos.
 
-**Request de ejemplo**
+## 3.2 Diseño
+
+- **Arquitectura:** `App.js` coordina estado; `src/screens` implementa pantallas; `src/components` presenta datos; `src/hooks/useDogImages.js` realiza la consulta; `src/services/deviceFeatures.js` encapsula capacidades nativas; `petcareValidation.js` valida persistencia y respuestas.
+- **Datos locales:** claves `@petcare/session:v1`, `@petcare/pets:v1`, `@petcare/reminders:v1`. La URI de foto refiere a un archivo dentro del directorio privado; las coordenadas solo se guardan tras acción explícita.
+- **API:** Dog CEO no es el backend de pacientes. No se transmiten a Dog CEO datos personales, mascotas, fotos, recordatorios ni coordenadas.
+- **Navegación:** pantallas escogidas por estado (`view`) y barra inferior. Mascotas, Agenda y Actividades ya tienen flujo; Lugares todavía es provisional. React Navigation está instalado pero no gobierna la navegación actual.
+- **Diseño visual:** componentes `StyleSheet`, tarjetas y formularios. Adjuntar mockups/capturas reales del equipo si la rúbrica lo requiere.
+
+## 3.3 Desarrollo
+
+### Configuración de Expo
+
+```sh
+npm ci
+npm start
+```
+
+Para validar compatibilidad/exportación:
+
+```sh
+npm test
+npx expo install --check
+npx expo export --platform web
+```
+
+### API: request y response
 
 ```http
 GET https://dog.ceo/api/breeds/image/random/6
 ```
 
-**Response ilustrativa del contrato de la API** (capturar y anexar la respuesta exacta obtenida durante la prueba):
+Ejemplo del contrato; la evidencia de resultados debe incluir una captura de la respuesta real obtenida en la ejecución del equipo:
 
 ```json
 {
-  "message": ["https://images.dog.ceo/breeds/hound-afghan/n02088094_1003.jpg"],
+  "message": [
+    "https://images.dog.ceo/breeds/hound-afghan/n02088094_1003.jpg"
+  ],
   "status": "success"
 }
 ```
 
-Las claves locales actuales son `@petcare/session:v1` y `@petcare/pets:v1`. La app no solicita permisos de hardware ni genera builds con EAS.
+### AsyncStorage
 
-### 3.4 Pruebas
+El arranque recupera datos y valida su forma antes de mostrarlos; cambios en estado local se escriben de forma serializada para no reordenar escrituras concurrentes. Si ocurre un error de almacenamiento, se informa en pantalla. AsyncStorage no cifra los datos.
 
-Registrar dispositivo/emulador, sistema operativo, fecha, pasos, resultado esperado, resultado observado y evidencia para cada caso:
+### Sensores, permisos y notificaciones
 
-| Caso | Validación |
+La configuración de plugins en `app.json` contiene textos de propósito para permisos. GPS es una lectura de primer plano de una sola vez; fotos se solicitan desde la acción de captura/selección; la agenda configura el canal Android y pide permiso al programar el aviso. La pestaña Actividades usa el acelerómetro sin guardar o transmitir lecturas.
+
+### Generación de APK
+
+`eas.json` declara el perfil `preview` (`distribution: internal`, `android.buildType: apk`). Con cuenta del equipo y proyecto vinculado:
+
+```sh
+npx eas-cli login
+npx eas-cli init
+npx eas-cli build --platform android --profile preview
+```
+
+El APK y su URL son **pendientes**, no resultados ya producidos. El identificador de aplicación `com.petcare.aplicacionesmoviles` es provisional y debe confirmarse libre antes de generar/publicar.
+
+## 3.4 Pruebas
+
+### Pruebas automatizadas del repositorio
+
+`npm test` contiene cuatro pruebas unitarias:
+
+| Prueba | Cobertura |
 |---|---|
-| Acceso | Correo no válido muestra error; correo válido abre el prototipo. |
-| Alta | Nombre/raza vacíos no se guardan; una mascota válida aparece en la lista y en el detalle. |
-| Persistencia | Tras reiniciar, se recuperan sesión de demostración y mascotas añadidas. |
-| API disponible | Las imágenes y razas aparecen; actualizar solicita nuevos datos. |
-| API no disponible | Se presenta un error comprensible y el botón permite reintentar. |
-| Estados vacíos | Una respuesta válida sin imágenes muestra un mensaje y opción para volver a intentar. |
+| Sesión y mascotas | Acepta registros válidos y rechaza formatos incompletos; valida metadatos opcionales. |
+| Agenda | Valida los campos obligatorios de un recordatorio persistido. |
+| Dog CEO | Valida el contrato y filtra URLs que no pertenecen al dominio HTTPS esperado. |
+| Fecha/hora | Acepta una fecha futura y rechaza fecha imposible, hora/formato inválido y fecha pasada. |
 
-Completar la tabla con resultados observados y capturas. No hay resultados de rendimiento ni validación en dispositivo incluidos por defecto.
+**Ejecución observada en el entorno de desarrollo:** 4 pruebas aprobadas, 0 fallidas. Registrar junto a la entrega la fecha de nueva ejecución y la salida guardada por el equipo.
 
-## 4. Capítulo IV: Resultados
+### Matriz de validación manual
 
-Adjuntar evidencias generadas por el equipo, con fecha y descripción:
+Completar las columnas de resultado, dispositivo y evidencia después de ejecutar cada prueba. Una exportación web no demuestra el funcionamiento del hardware.
 
-- Capturas de acceso, inicio, alta, lista persistida y detalle.
-- Capturas de carga, error/reintento y respuesta de la API.
-- Inspección o evidencia de recuperación de datos de AsyncStorage.
-- Evidencia de ejecución en emulador o dispositivo real, indicando modelo y sistema.
-- Enlace de Expo.dev e instalación APK **solo si se genera y prueba**. Actualmente no hay APK ni build EAS en el repositorio.
+| Caso | Resultado esperado | Estado/evidencia |
+|---|---|---|
+| Correo inválido/válido y cierre de sesión | Muestra validación; abre el prototipo; luego vuelve al acceso. | [ejecutar y adjuntar captura] |
+| Alta/edición de mascota | Campos requeridos validados; lista y detalle reflejan cambios. | Alta en navegador observada; documentar nueva prueba |
+| Reinicio/persistencia | Sesión, mascotas y recordatorios se recuperan en el mismo dispositivo. | Reinicio web previamente observado para mascota; validar en dispositivo |
+| API disponible | Imágenes y raza presentadas; actualizar carga otro resultado. | API Dog CEO respondió HTTP correcto y seis URLs en una comprobación; adjuntar response |
+| API indisponible/estado vacío | Error reintentable y estado vacío legible. | [simular y adjuntar captura] |
+| Cámara/fotos | Permiso aceptado permite elegir/tomar y conservar foto tras reiniciar. | [prueba física pendiente] |
+| GPS | Permiso aceptado guarda coordenadas; denegado explica el motivo. | [prueba física pendiente] |
+| Agenda | Aviso futuro recibido; cancelar suprime el aviso pendiente; datos recuperados. | [prueba física pendiente] |
+| Acelerómetro | Datos varían al mover el teléfono; pantalla libera lectura al salir. | [prueba física pendiente] |
+| Instalación APK | APK se instala y funcionalidades nativas funcionan. | [build EAS e instalación pendientes] |
 
-## 5. Capítulo V: Conclusiones
+# 4. Capítulo IV: Resultados
 
-Redactar conclusiones a partir de las pruebas realizadas: logros técnicos verificables, aplicación de hooks, API y persistencia, límites del prototipo y aprendizajes del equipo. Evitar atribuir impacto o resultados a usuarios sin evaluación.
+## Resultados técnicos verificables
 
-## 6. Capítulo VI: Recomendaciones
+- Implementación de formularios y flujos locales de mascotas, agenda y actividad.
+- Hook de API con estado y validación de respuesta.
+- Persistencia de sesión demo, mascotas y recordatorios.
+- Configuración de permisos, plugins Expo y perfil EAS para APK interno.
+- Cuatro pruebas automatizadas aprobadas en el entorno de desarrollo.
+- La app ya había sido exportada para web y Dog CEO respondió con seis imágenes en la validación de desarrollo.
 
-- Validar necesidades y flujos con la organización antes de ampliar el producto.
-- Incorporar backend/BaaS (por ejemplo, Firebase o Supabase) y autenticación segura si se requiere sincronización.
-- Completar gestión de citas y edición/eliminación con pruebas de datos.
-- Diseñar por separado la integración de GPS/cámara/sensores y solicitar permisos solo cuando una función concreta los necesite.
-- Evaluar notificaciones locales/remotas y pruebas en dispositivos reales.
-- Configurar EAS Build y preparar publicación solo después de validar privacidad, seguridad, rendimiento y requisitos de tienda.
+## Evidencias por completar para entregar
 
-## Relación con la rúbrica APF2
+1. Capturas de acceso, inicio, formulario de mascota, lista/detalle y edición.
+2. Capturas de Agenda, notificación recibida y cancelación.
+3. Capturas de permisos aceptados y denegados; no incluir coordenadas/datos privados de terceros.
+4. Captura de Actividades en dispositivo mostrando lecturas del acelerómetro.
+5. Respuesta real de Dog CEO, incluyendo fecha de consulta.
+6. Evidencia de persistencia tras cierre/reapertura en un teléfono/emulador.
+7. Enlace del build EAS, descarga/instalación APK y dispositivo de validación, una vez generado.
+8. Autorización y evidencia de validación con Pet Spaw si el proyecto se presenta como aplicado a la clínica.
 
-| Criterio | Evidencia en el proyecto |
-|---|---|
-| Hooks y lógica funcional (20 %) | `useState` en formularios/vistas y `useEffect` para carga y persistencia local/API. |
-| Consumo de API y renderizado (25 %) | Hook de Dog CEO y tarjetas de imágenes con nombre de raza. |
-| Carga, error y estados vacíos (15 %) | Indicador, mensajes, reintento y resultado vacío en descubrimiento; error de carga local con reintento. |
-| AsyncStorage (20 %) | Guardado/recuperación de sesión demo y mascotas. |
-| Integración y documentación (15 %) | Flujo de alta-lista-detalle, API, guía de ejecución y esta estructura de informe. |
+No se declara APK, entrevista, aprobación institucional ni prueba nativa hasta tener evidencia.
 
-La rúbrica debe calificarse con las pruebas y evidencias reales del equipo; esta tabla solo vincula criterios con la implementación.
+# 5. Capítulo V: Conclusiones
+
+Redactar el cierre final después de realizar pruebas en dispositivo. A partir del estado actual del código, el avance demuestra integración técnica de hooks, API, AsyncStorage y estados de interfaz, junto a capacidades locales opcionales. El prototipo no sustituye un sistema clínico: no contiene autenticación, backend, citas sincronizadas ni datos reales de pacientes. La calidad de la experiencia nativa, la utilidad para Pet Spaw y el resultado del APK quedan sujetos a validación.
+
+# 6. Capítulo VI: Recomendaciones
+
+- Obtener de Pet Spaw misión, visión, historia, organigrama y procesos autorizados; verificar el distrito y acordar alcance antes de atribuirle requisitos.
+- Realizar pruebas con usuarios autorizados, datos sintéticos y consentimiento; aplicar las políticas de privacidad correspondientes antes de usar información real.
+- Añadir un backend/BaaS y autenticación segura solo si el caso requiere sincronización multiusuario.
+- Completar Lugares con una API de establecimientos si se obtiene una fuente apropiada; no presentar la pantalla provisional como buscador de clínicas.
+- Evaluar rendimiento, accesibilidad, copias de seguridad y manejo de eliminación de datos.
+- Generar y probar APK interno; revisar identificador, permisos y textos de privacidad antes de distribución o publicación.
+
+## Relación con la rúbrica del avance 2
+
+| Criterio | Peso | Evidencia implementada | Pendiente para sostener el máximo |
+|---|---:|---|---|
+| Hooks y lógica de componentes funcionales | 20 % | `useState`, `useEffect`, `useCallback`; efectos de carga/persistencia y alta/edición. | Evidenciar pruebas de ciclo de vida/efectos en uso real. |
+| Consumo de API y renderizado de datos | 25 % | Dog CEO con `fetch`, validación HTTP/JSON, imágenes, raza y reintento. | Adjuntar request/response y capturas reales en dispositivo. |
+| Estados de carga, error y experiencia de usuario | 15 % | Indicadores/mensajes de carga, error, retry y vacío; permisos y errores locales informados. | Adjuntar pruebas provocando errores/denegación de permisos. |
+| Persistencia con AsyncStorage | 20 % | Sesión demo, mascotas, metadatos opcionales y agenda persistidos/validados. | Comprobar reinicio, lectura y recuperación en teléfono/emulador. |
+| Integración funcional y documentación técnica | 15 % | Flujos integrados, pruebas unitarias, README, requisitos, arquitectura y guía por capítulos. | Completar datos de la organización y cronograma real; capturas, prueba física y APK. |
+
+La implementación cubre los criterios de código indicados, pero **no garantiza por sí sola un puntaje excelente**. El informe de la organización, evidencias de dispositivo y APK deben completarse con información y pruebas verdaderas del equipo.
+
+## Datos institucionales que debe facilitar/validar el equipo
+
+- Distrito/dirección oficial de Pet Spaw y autorización para presentarla como organización de aplicación.
+- Misión, visión, historia y fuente oficial, o confirmación de la clínica de que no cuenta con declaraciones públicas.
+- Organigrama/roles y proceso real que se pretende apoyar.
+- Integrantes, asesor, participantes y cronograma real del curso.
+- Dispositivos, fechas, resultados, capturas, salida de EAS e instalación observados por el equipo.
