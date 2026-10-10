@@ -9,21 +9,23 @@ import {
   View,
 } from 'react-native';
 import { colors } from '../theme/colors';
-import { petList } from '../data/pets';
 import StatsBar from '../components/StatsBar';
 import PetCard from '../components/PetCard';
 import BottomNav from '../components/BottomNav';
+import DogDiscoverySection from '../components/DogDiscoverySection';
 
 export default function HomeScreen({
   userName,
+  pets,
   activeTab,
+  storageError,
   onSelectTab,
   onOpenProfile,
   onOpenPet,
   onAddPet,
 }) {
-  const dogs = petList.filter((p) => p.emoji === '🐶' || p.emoji === '🐕').length;
-  const cats = petList.filter((p) => p.emoji === '🐱').length;
+  const dogs = pets.filter((pet) => pet.emoji === '🐶' || pet.emoji === '🐕').length;
+  const cats = pets.filter((pet) => pet.emoji === '🐱').length;
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -44,20 +46,36 @@ export default function HomeScreen({
         contentContainerStyle={styles.bodyContent}
         showsVerticalScrollIndicator={false}
       >
-        <StatsBar total={petList.length} dogs={dogs} cats={cats} />
+        {storageError ? (
+          <Text style={styles.storageError} accessibilityRole="alert">
+            {storageError}
+          </Text>
+        ) : null}
+
+        <StatsBar total={pets.length} dogs={dogs} cats={cats} />
 
         <View style={styles.listHeader}>
           <Text style={styles.listTitle}>Mis mascotas</Text>
-          <TouchableOpacity style={styles.addButton} onPress={onAddPet}>
+          <TouchableOpacity
+            accessibilityRole="button"
+            style={styles.addButton}
+            onPress={onAddPet}
+          >
             <Text style={styles.addButtonText}>+ Agregar</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.list}>
-          {petList.map((pet) => (
+          {pets.length === 0 ? (
+            <Text style={styles.emptyMessage}>
+              Aún no tienes mascotas. Usa “Agregar” para registrar la primera.
+            </Text>
+          ) : pets.map((pet) => (
             <PetCard key={pet.id} pet={pet} onPress={onOpenPet} />
           ))}
         </View>
+
+        <DogDiscoverySection />
       </ScrollView>
 
       <BottomNav activeTab={activeTab} onSelectTab={onSelectTab} />
@@ -93,6 +111,12 @@ const styles = StyleSheet.create({
   avatarEmoji: { fontSize: 20 },
   body: { flex: 1 },
   bodyContent: { paddingHorizontal: 18, paddingBottom: 24 },
+  storageError: {
+    color: '#b23b35',
+    fontSize: 13,
+    lineHeight: 19,
+    marginBottom: 12,
+  },
   listHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -108,4 +132,14 @@ const styles = StyleSheet.create({
   },
   addButtonText: { color: '#fff', fontWeight: '700', fontSize: 12 },
   list: { paddingBottom: 8 },
+  emptyMessage: {
+    backgroundColor: colors.white,
+    borderRadius: 16,
+    color: colors.textMuted,
+    fontSize: 13,
+    lineHeight: 20,
+    marginBottom: 14,
+    padding: 18,
+    textAlign: 'center',
+  },
 });

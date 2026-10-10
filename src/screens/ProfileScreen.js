@@ -3,7 +3,13 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { colors } from '../theme/colors';
 
-export default function ProfileScreen({ userName, userEmail, onBack, onLogout }) {
+export default function ProfileScreen({
+  userName,
+  userEmail,
+  storageError,
+  onBack,
+  onLogout,
+}) {
   return (
     <SafeAreaView style={styles.screen}>
       <StatusBar style="dark" />
@@ -26,6 +32,15 @@ export default function ProfileScreen({ userName, userEmail, onBack, onLogout })
             <Text style={styles.infoValue}>PetCare</Text>
           </View>
         </View>
+
+        <Text style={styles.demoNotice}>
+          Perfil de demostración. La sesión se guarda localmente y no reemplaza una autenticación real.
+        </Text>
+        {storageError ? (
+          <Text style={styles.errorMessage} accessibilityRole="alert">
+            {storageError}
+          </Text>
+        ) : null}
 
         <TouchableOpacity style={styles.logoutButton} onPress={onLogout}>
           <Text style={styles.logoutText}>Cerrar sesión</Text>
@@ -59,6 +74,20 @@ const styles = StyleSheet.create({
   },
   infoLabel: { fontWeight: '600', color: '#555' },
   infoValue: { color: '#777' },
+  demoNotice: {
+    color: colors.textMuted,
+    fontSize: 12,
+    lineHeight: 18,
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  errorMessage: {
+    color: '#b23b35',
+    fontSize: 13,
+    lineHeight: 19,
+    marginBottom: 12,
+    textAlign: 'center',
+  },
   logoutButton: {
     backgroundColor: colors.white, borderWidth: 1, borderColor: '#f0d0d0',
     paddingVertical: 14, paddingHorizontal: 40, borderRadius: 16,
