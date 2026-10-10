@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { parseDogImageResponse } from '../data/petcareValidation';
 
 const DOG_API_URL = 'https://dog.ceo/api/breeds/image/random/6';
 
@@ -24,20 +25,7 @@ export default function useDogImages() {
           throw new Error(`Dog CEO respondió con HTTP ${response.status}.`);
         }
 
-        const payload = await response.json();
-        if (
-          !payload ||
-          payload.status !== 'success' ||
-          !Array.isArray(payload.message)
-        ) {
-          throw new Error('La respuesta de Dog CEO no tiene el formato esperado.');
-        }
-
-        const validImages = payload.message.filter(
-          (url) =>
-            typeof url === 'string' &&
-            url.startsWith('https://images.dog.ceo/'),
-        );
+        const validImages = parseDogImageResponse(await response.json());
 
         if (isCurrent) setImages(validImages);
       } catch (requestError) {

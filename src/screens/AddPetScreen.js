@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import {
+  ActivityIndicator,
+  Image,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -12,20 +14,55 @@ import {
   View,
 } from 'react-native';
 import { colors } from '../theme/colors';
+import { getCurrentCoordinates, pickPetPhoto } from '../services/deviceFeatures';
 
 const petTypes = [
   { id: 'dog', label: 'Perro', emoji: '🐶', shade: '#f0d1a0' },
   { id: 'cat', label: 'Gato', emoji: '🐱', shade: '#f1d9c6' },
 ];
 
-export default function AddPetScreen({ onBack, onSave, storageError }) {
-  const [name, setName] = useState('');
-  const [breed, setBreed] = useState('');
-  const [age, setAge] = useState('');
-  const [weight, setWeight] = useState('');
-  const [next, setNext] = useState('');
-  const [type, setType] = useState(petTypes[0]);
+export default function AddPetScreen({ pet, onBack, onSave, storageError }) {
+  const [name, setName] = useState(pet?.name || '');
+  const [breed, setBreed] = useState(pet?.breed || '');
+  const [age, setAge] = useState(pet?.age === 'No indicada' ? '' : pet?.age || '');
+  const [weight, setWeight] = useState(
+    pet?.weight === 'No registrado' ? '' : pet?.weight || '',
+  );
+  const [next, setNext] = useState(
+    pet?.next === 'Sin cita programada' ? '' : pet?.next || '',
+  );
+  const [photoUri, setPhotoUri] = useState(pet?.photoUri || null);
+  const [location, setLocation] = useState(pet?.location || null);
+  const [type, setType] = useState(
+    petTypes.find((petType) => petType.emoji === pet?.emoji) || petTypes[0],
+  );
   const [validationError, setValidationError] = useState(null);
+  const [deviceAction, setDeviceAction] = useState(null);
+
+  async function handlePhoto(useCamera) {
+    setDeviceAction(useCamera ? 'camera' : 'photo');
+    setValidationError(null);
+    try {
+      const uri = await pickPetPhoto(useCamera);
+      if (uri) setPhotoUri(uri);
+    } catch (error) {
+      setValidationError(error.message);
+    } finally {
+      setDeviceAction(null);
+    }
+  }
+
+  async function handleCaptureLocation() {
+    setDeviceAction('location');
+    setValidationError(null);
+    try {
+      setLocation(await getCurrentCoordinates());
+    } catch (error) {
+      setValidationError(error.message);
+    } finally {
+      setDeviceAction(null);
+    }
+  }
 
   function handleSave() {
     if (!name.trim() || !breed.trim()) {
@@ -35,7 +72,7 @@ export default function AddPetScreen({ onBack, onSave, storageError }) {
 
     setValidationError(null);
     onSave({
-      id: `pet-${Date.now()}`,
+      id: pet?.id ?? `pet-${Date.now()}`,
       name: name.trim(),
       breed: breed.trim(),
       age: age.trim() || 'No indicada',
@@ -43,6 +80,8 @@ export default function AddPetScreen({ onBack, onSave, storageError }) {
       next: next.trim() || 'Sin cita programada',
       shade: type.shade,
       emoji: type.emoji,
+      ...(photoUri ? { photoUri } : {}),
+      ...(location ? { location } : {}),
     });
   }
 
@@ -57,7 +96,7 @@ export default function AddPetScreen({ onBack, onSave, storageError }) {
           <TouchableOpacity accessibilityRole="button" onPress={onBack} style={styles.backButton}>
             <Text style={styles.backText}>‹ Volver</Text>
           </TouchableOpacity>
-          <Text style={styles.title}>Agregar mascota</Text>
+          <Text style={styles.title}>{pet ? 'Editar mascota' : 'Agregar mascota'}</Text>
           <Text style={styles.subtitle}>Completa sus datos para guardarlos en este dispositivo.</Text>
         </View>
 
@@ -96,6 +135,61 @@ export default function AddPetScreen({ onBack, onSave, storageError }) {
             placeholder="Ej. 15 nov. Vacunación"
           />
 
+          <Text style={styles.label}>Foto y ubicación (opcionales)</Text>
+          <Text style={styles.deviceHint}>
+            Solo se solicitan permisos si eliges una función. La ubicación se captura una vez y se guarda únicamente en este dispositivo.
+          </Text>
+          <View style={styles.deviceActions}>
+            <TouchableOpacity
+              accessibilityRole="button"
+              disabled={Boolean(deviceAction)}
+              onPress={() => handlePhoto(true)}
+              style={styles.deviceButton}
+            >
+              <Text style={styles.deviceButtonText}>Tomar foto</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              accessibilityRole="button"
+              disabled={Boolean(deviceAction)}
+              onPress={() => handlePhoto(false)}
+              style={styles.deviceButton}
+            >
+              <Text style={styles.deviceButtonText}>Elegir foto</Text>
+            </TouchableOpacity>
+          </View>
+          {photoUri ? (
+            <Image
+              source={{ uri: photoUri }}
+              style={styles.photoPreview}
+              accessibilityLabel={`Foto de ${name || 'la mascota'}`}
+            />
+          ) : null}
+          <TouchableOpacity
+            accessibilityRole="button"
+            disabled={Boolean(deviceAction)}
+            onPress={handleCaptureLocation}
+            style={styles.locationButton}
+          >
+            {deviceAction === 'location' ? (
+              <ActivityIndicator color={colors.brand} />
+            ) : (
+              <Text style={styles.deviceButtonText}>
+                {location ? 'Actualizar ubicación' : 'Guardar ubicación actual'}
+              </Text>
+            )}
+          </TouchableOpacity>
+          {location ? (
+            <Text style={styles.locationText}>
+              Ubicación guardada: {location.latitude.toFixed(5)}, {location.longitude.toFixed(5)}
+            </Text>
+          ) : null}
+
+          {deviceAction === 'camera' || deviceAction === 'photo' ? (
+            <View style={styles.loadingRow}>
+              <ActivityIndicator color={colors.primary} />
+              <Text style={styles.deviceHint}>Abriendo selector de imagen…</Text>
+            </View>
+          ) : null}
           {validationError ? (
             <Text style={styles.errorMessage} accessibilityRole="alert">
               {validationError}
@@ -109,10 +203,13 @@ export default function AddPetScreen({ onBack, onSave, storageError }) {
 
           <TouchableOpacity
             accessibilityRole="button"
+            disabled={Boolean(deviceAction)}
             onPress={handleSave}
-            style={styles.saveButton}
+            style={[styles.saveButton, Boolean(deviceAction) && styles.disabledButton]}
           >
-            <Text style={styles.saveButtonText}>Guardar mascota</Text>
+            <Text style={styles.saveButtonText}>
+              {pet ? 'Guardar cambios' : 'Guardar mascota'}
+            </Text>
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -162,6 +259,48 @@ const styles = StyleSheet.create({
   typeButtonSelected: { backgroundColor: '#eafaf5', borderColor: colors.primary },
   typeEmoji: { fontSize: 20 },
   typeLabel: { color: colors.textDark, fontWeight: '700' },
+  deviceHint: {
+    color: colors.textMuted,
+    fontSize: 12,
+    lineHeight: 18,
+    marginBottom: 10,
+  },
+  deviceActions: { flexDirection: 'row', gap: 10, marginBottom: 10 },
+  deviceButton: {
+    flex: 1,
+    alignItems: 'center',
+    backgroundColor: '#eafaf5',
+    borderRadius: 12,
+    paddingVertical: 12,
+  },
+  deviceButtonText: { color: colors.brand, fontSize: 13, fontWeight: '700' },
+  photoPreview: {
+    width: 120,
+    height: 120,
+    alignSelf: 'center',
+    backgroundColor: '#eaf0eb',
+    borderRadius: 16,
+    marginVertical: 8,
+  },
+  locationButton: {
+    alignItems: 'center',
+    backgroundColor: '#eafaf5',
+    borderRadius: 12,
+    marginBottom: 8,
+    paddingVertical: 12,
+  },
+  locationText: {
+    color: colors.textMuted,
+    fontSize: 12,
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  loadingRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
+    marginVertical: 8,
+  },
   field: { marginBottom: 14 },
   input: {
     backgroundColor: colors.white,
@@ -181,5 +320,6 @@ const styles = StyleSheet.create({
     marginTop: 6,
     paddingVertical: 15,
   },
+  disabledButton: { opacity: 0.5 },
   saveButtonText: { color: '#fff', fontSize: 15, fontWeight: '700' },
 });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { colors } from '../theme/colors';
 
 export default function PetCard({ pet, onPress }) {
@@ -9,9 +9,17 @@ export default function PetCard({ pet, onPress }) {
           activeOpacity={0.7}
           onPress={() => onPress?.(pet)}
       >
-        <View style={[styles.petImage, { backgroundColor: pet.shade }]}>
-          <Text style={styles.petEmoji}>{pet.emoji}</Text>
-        </View>
+        {pet.photoUri ? (
+          <Image
+            source={{ uri: pet.photoUri }}
+            style={styles.petImage}
+            accessibilityLabel={`Foto de ${pet.name}`}
+          />
+        ) : (
+          <View style={[styles.petImage, { backgroundColor: pet.shade }]}>
+            <Text style={styles.petEmoji}>{pet.emoji}</Text>
+          </View>
+        )}
 
         <View style={styles.petInfo}>
           <Text style={styles.petName}>{pet.name}</Text>

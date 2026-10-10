@@ -1,9 +1,18 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Image,
+  Linking,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { colors } from '../theme/colors';
 
-export default function PetDetailScreen({ pet, onBack }) {
+export default function PetDetailScreen({ pet, onBack, onEdit }) {
   if (!pet) return null;
 
   return (
@@ -16,9 +25,17 @@ export default function PetDetailScreen({ pet, onBack }) {
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={[styles.avatar, { backgroundColor: pet.shade }]}>
-          <Text style={styles.avatarEmoji}>{pet.emoji}</Text>
-        </View>
+        {pet.photoUri ? (
+          <Image
+            source={{ uri: pet.photoUri }}
+            style={styles.avatar}
+            accessibilityLabel={`Foto de ${pet.name}`}
+          />
+        ) : (
+          <View style={[styles.avatar, { backgroundColor: pet.shade }]}>
+            <Text style={styles.avatarEmoji}>{pet.emoji}</Text>
+          </View>
+        )}
 
         <Text style={styles.name}>{pet.name}</Text>
         <Text style={styles.breed}>{pet.breed}</Text>
@@ -38,7 +55,29 @@ export default function PetDetailScreen({ pet, onBack }) {
           </View>
         </View>
 
-        <TouchableOpacity style={styles.primaryButton}>
+        {pet.location ? (
+          <View style={styles.locationCard}>
+            <Text style={styles.locationTitle}>Ubicación guardada</Text>
+            <Text style={styles.locationText}>
+              {pet.location.latitude.toFixed(5)}, {pet.location.longitude.toFixed(5)}
+            </Text>
+            <TouchableOpacity
+              accessibilityRole="link"
+              onPress={() =>
+                Linking.openURL(
+                  `https://maps.google.com/?q=${pet.location.latitude},${pet.location.longitude}`,
+                ).catch((error) =>
+                  console.error('No se pudo abrir el mapa de la mascota.', error),
+                )
+              }
+              style={styles.mapButton}
+            >
+              <Text style={styles.mapButtonText}>Abrir en el mapa</Text>
+            </TouchableOpacity>
+          </View>
+        ) : null}
+
+        <TouchableOpacity accessibilityRole="button" onPress={onEdit} style={styles.primaryButton}>
           <Text style={styles.primaryButtonText}>Editar mascota</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -68,6 +107,17 @@ const styles = StyleSheet.create({
   },
   infoLabel: { color: colors.textMuted, fontSize: 14 },
   infoValue: { color: colors.textDark, fontSize: 14, fontWeight: '700' },
+  locationCard: {
+    width: '100%',
+    backgroundColor: colors.white,
+    borderRadius: 16,
+    marginBottom: 16,
+    padding: 16,
+  },
+  locationTitle: { color: colors.textDark, fontSize: 14, fontWeight: '700' },
+  locationText: { color: colors.textMuted, fontSize: 12, marginTop: 5 },
+  mapButton: { alignSelf: 'flex-start', marginTop: 10, paddingVertical: 5 },
+  mapButtonText: { color: colors.brand, fontSize: 13, fontWeight: '700' },
   primaryButton: { backgroundColor: colors.primary, paddingVertical: 16, paddingHorizontal: 40, borderRadius: 16 },
   primaryButtonText: { color: '#fff', fontWeight: '700', fontSize: 16 },
 });
