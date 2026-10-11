@@ -1,0 +1,18 @@
+export const colors = {
+  bg: '#eef3ef',
+  bgDashboard: '#eef3ef',
+  glowGreen: '#d6f1e8',
+  glowYellow: '#eef7db',
+  card: '#ffffff',
+  cardBorder: '#eef2ef',
+  brand: '#2b7a6d',
+  textDark: '#1d2a2b',
+  textMuted: '#6b7773',
+  inputBg: '#edf3ef',
+  inputBorder: '#dfeae5',
+  primary: '#5ebfae',
+  primaryDark: '#2b7a6d',
+  statsBg: '#6ec4b3',
+  white: '#fff',
+  naranjaCita: '#d9853b',
+};
