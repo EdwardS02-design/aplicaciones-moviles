@@ -28,8 +28,10 @@ test('validates saved user and pet records, including optional device metadata',
     [{ ...pet, photoUri: 'file:///pet.jpg', location: { latitude: 1, longitude: 2 } }],
   );
   assert.throws(() => parseStoredUser('{"name":4}'), /formato válido/);
+  assert.throws(() => parseStoredUser('not-json'), /formato válido/);
   assert.throws(() => parseStoredPets('[null]'), /formato válido/);
   assert.throws(() => parseStoredPets('[{"id":1}]'), /formato válido/);
+  assert.throws(() => parseStoredPets('[{"id":"pet-1","name":"","breed":"Mestiza","age":"2 años","weight":"12 kg","next":"Sin cita","shade":"#fff","emoji":"🐶"}]'), /formato válido/);
 });
 
 test('validates saved reminders and rejects malformed records', () => {
@@ -63,6 +65,8 @@ test('parses valid future reminder date/time and rejects invalid or past input',
   );
   assert.throws(() => parseReminderDate('2030-02-30', '09:30', now), /no existe/);
   assert.throws(() => parseReminderDate('2030-02-03', '25:99', now), /formato/);
+  assert.throws(() => parseReminderDate('2030-02-03', undefined, now), /formato/);
   assert.throws(() => parseReminderDate('2030-01-01', '11:00', now), /fecha futura/);
   assert.match(formatReminderDate('2030-02-03T09:30:00.000Z'), /2030/);
+  assert.equal(formatReminderDate('invalid-date'), 'Fecha no válida');
 });
