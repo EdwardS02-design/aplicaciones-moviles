@@ -19,6 +19,7 @@ import { getCurrentCoordinates, pickPetPhoto } from '../services/deviceFeatures'
 const petTypes = [
   { id: 'dog', label: 'Perro', emoji: '🐶', shade: '#f0d1a0' },
   { id: 'cat', label: 'Gato', emoji: '🐱', shade: '#f1d9c6' },
+  { id: 'rabbit', label: 'Conejo', emoji: '🐰', shade: '#d7c7e8' },
 ];
 
 export default function AddPetScreen({ pet, onBack, onSave, storageError }) {

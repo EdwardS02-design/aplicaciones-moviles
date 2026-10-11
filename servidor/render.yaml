@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: petcare-lugares
+    runtime: node
+    plan: free
+    rootDir: servidor
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: GOOGLE_MAPS_API_KEY
+        sync: false
+      - key: PORT
+        value: 10000

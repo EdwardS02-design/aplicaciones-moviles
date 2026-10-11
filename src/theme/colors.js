@@ -14,4 +14,5 @@ export const colors = {
   primaryDark: '#135a51',
   statsBg: '#5fc4b3',
   white: '#fff',
+  naranjaCita: '#d9853b',
 };

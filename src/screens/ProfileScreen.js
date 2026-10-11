@@ -7,6 +7,7 @@ export default function ProfileScreen({
   userName,
   userEmail,
   storageError,
+  isCloudAccount,
   onBack,
   onLogout,
 }) {
@@ -34,7 +35,9 @@ export default function ProfileScreen({
         </View>
 
         <Text style={styles.demoNotice}>
-          Perfil de demostración. La sesión se guarda localmente y no reemplaza una autenticación real.
+          {isCloudAccount
+            ? 'Cuenta autenticada con sincronización de datos en Supabase.'
+            : 'Cuenta local protegida en este dispositivo; no sincroniza datos con otros dispositivos.'}
         </Text>
         {storageError ? (
           <Text style={styles.errorMessage} accessibilityRole="alert">

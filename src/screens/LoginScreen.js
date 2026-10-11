@@ -8,21 +8,33 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useCuidador } from '../estado/CuidadorContext';
 import { colors } from '../theme/colors';
 
-export default function LoginScreen({ onLogin, storageError }) {
+export default function LoginScreen({ onRegister }) {
+  const { entrar, hayNube } = useCuidador();
   const [email, setEmail] = useState('');
-  const [emailError, setEmailError] = useState(null);
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
 
-  function handleContinue() {
-    const normalizedEmail = email.trim();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-      setEmailError('Ingresa un correo electrónico válido.');
+  async function handleContinue() {
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail) || !password) {
+      setError('Ingresa un correo válido y tu contraseña.');
       return;
     }
 
-    setEmailError(null);
-    onLogin({ email: normalizedEmail });
+    setBusy(true);
+    setError('');
+    try {
+      await entrar({ correo: normalizedEmail, clave: password });
+    } catch (loginError) {
+      console.error('No se pudo iniciar sesión en PetCare.', loginError);
+      setError(loginError.message || 'No se pudo iniciar sesión. Revisa tus datos e inténtalo de nuevo.');
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -36,18 +48,14 @@ export default function LoginScreen({ onLogin, storageError }) {
         <Text style={styles.loginBrand}>PetCare</Text>
         <Text style={styles.loginTitle}>Bienvenido</Text>
         <Text style={styles.loginSubtitle}>
-          Ingresa un correo para abrir tu espacio de cuidado.
+          Entra a tu cuenta para consultar los datos de tus mascotas.
         </Text>
 
         <View style={styles.inputWrap}>
           <Text style={styles.inputLabel}>Correo electrónico</Text>
           <TextInput
             value={email}
-            onChangeText={(value) => {
-              setEmail(value);
-              if (emailError) setEmailError(null);
-            }}
-            onSubmitEditing={handleContinue}
+            onChangeText={setEmail}
             placeholder="tu@correo.com"
             keyboardType="email-address"
             textContentType="emailAddress"
@@ -58,29 +66,42 @@ export default function LoginScreen({ onLogin, storageError }) {
           />
         </View>
 
-        {emailError ? (
-          <Text style={styles.errorMessage} accessibilityRole="alert">
-            {emailError}
-          </Text>
-        ) : null}
-        {storageError ? (
-          <Text style={styles.errorMessage} accessibilityRole="alert">
-            {storageError}
-          </Text>
+        <View style={styles.inputWrap}>
+          <Text style={styles.inputLabel}>Contraseña</Text>
+          <TextInput
+            value={password}
+            onChangeText={setPassword}
+            onSubmitEditing={handleContinue}
+            placeholder="Tu contraseña"
+            secureTextEntry
+            textContentType="password"
+            autoComplete="password"
+            style={styles.input}
+          />
+        </View>
+
+        {error ? (
+          <Text style={styles.errorMessage} accessibilityRole="alert">{error}</Text>
         ) : null}
 
         <View style={styles.demoNotice}>
           <Text style={styles.demoNoticeText}>
-            Modo de demostración: no se valida una contraseña ni se envían datos a un servidor.
+            {hayNube
+              ? 'Tu cuenta se sincroniza de forma segura con Supabase.'
+              : 'Modo local: tu cuenta y tus datos se guardan en este dispositivo.'}
           </Text>
         </View>
 
         <TouchableOpacity
           accessibilityRole="button"
-          style={styles.primaryButton}
+          style={[styles.primaryButton, busy && styles.disabledButton]}
           onPress={handleContinue}
+          disabled={busy}
         >
-          <Text style={styles.primaryButtonText}>Continuar</Text>
+          <Text style={styles.primaryButtonText}>{busy ? 'Ingresando…' : 'Iniciar sesión'}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.registerButton} onPress={onRegister}>
+          <Text style={styles.registerText}>Crear una cuenta</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -92,8 +113,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bg,
     justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 24,
+    padding: 24,
+    overflow: 'hidden',
   },
   loginBgGlowOne: {
     position: 'absolute',
@@ -101,9 +122,8 @@ const styles = StyleSheet.create({
     height: 280,
     borderRadius: 140,
     backgroundColor: colors.glowGreen,
-    top: 60,
-    left: -60,
-    opacity: 0.8,
+    top: -90,
+    left: -70,
   },
   loginBgGlowTwo: {
     position: 'absolute',
@@ -111,71 +131,43 @@ const styles = StyleSheet.create({
     height: 220,
     borderRadius: 110,
     backgroundColor: colors.glowYellow,
-    right: -30,
-    bottom: 100,
-    opacity: 0.8,
+    right: -60,
+    bottom: 30,
   },
   loginCard: {
-    width: '86%',
-    maxWidth: 420,
     backgroundColor: colors.card,
-    borderRadius: 32,
-    paddingHorizontal: 24,
-    paddingTop: 28,
-    paddingBottom: 30,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 18 },
-    shadowOpacity: 0.12,
-    shadowRadius: 22,
-    elevation: 10,
+    borderRadius: 30,
+    padding: 24,
     borderWidth: 1,
     borderColor: colors.cardBorder,
   },
   loginBrand: {
-    fontSize: 28,
-    fontWeight: '800',
     color: colors.brand,
-    textAlign: 'center',
-    marginBottom: 16,
+    fontSize: 15,
+    fontWeight: '800',
+    letterSpacing: 1,
+    marginBottom: 18,
   },
-  loginTitle: { fontSize: 30, fontWeight: '800', color: colors.textDark, marginBottom: 6 },
-  loginSubtitle: { fontSize: 15, color: colors.textMuted, marginBottom: 22, lineHeight: 21 },
+  loginTitle: { color: colors.textDark, fontSize: 28, fontWeight: '800' },
+  loginSubtitle: { color: colors.textMuted, fontSize: 14, lineHeight: 21, marginTop: 8, marginBottom: 24 },
   inputWrap: { marginBottom: 14 },
-  inputLabel: {
-    fontSize: 13,
-    color: '#4f5857',
-    marginBottom: 8,
-    marginLeft: 4,
-    fontWeight: '600',
-  },
+  inputLabel: { color: colors.textDark, fontSize: 12, fontWeight: '700', marginBottom: 7 },
   input: {
     backgroundColor: colors.inputBg,
-    borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.inputBorder,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontSize: 15,
+    borderRadius: 15,
+    paddingHorizontal: 14,
+    paddingVertical: 13,
     color: colors.textDark,
+    fontSize: 14,
   },
-  errorMessage: { color: '#b23b35', fontSize: 13, lineHeight: 19, marginBottom: 10 },
-  demoNotice: {
-    backgroundColor: '#f3f7f3',
-    borderRadius: 14,
-    marginBottom: 18,
-    padding: 12,
-  },
-  demoNoticeText: { color: '#58635f', fontSize: 12, lineHeight: 18 },
-  primaryButton: {
-    backgroundColor: colors.primary,
-    paddingVertical: 16,
-    borderRadius: 16,
-    alignItems: 'center',
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.2,
-    shadowRadius: 14,
-    elevation: 5,
-  },
-  primaryButtonText: { color: '#fff', fontWeight: '700', fontSize: 16 },
+  errorMessage: { color: '#b91c1c', fontSize: 13, marginBottom: 12 },
+  demoNotice: { backgroundColor: '#edf8f4', borderRadius: 14, padding: 12, marginBottom: 16 },
+  demoNoticeText: { color: colors.textMuted, fontSize: 12, lineHeight: 18 },
+  primaryButton: { backgroundColor: colors.brand, borderRadius: 15, paddingVertical: 15, alignItems: 'center' },
+  disabledButton: { opacity: 0.6 },
+  primaryButtonText: { color: colors.white, fontSize: 14, fontWeight: '800' },
+  registerButton: { paddingVertical: 14, alignItems: 'center' },
+  registerText: { color: colors.primaryDark, fontSize: 14, fontWeight: '700' },
 });

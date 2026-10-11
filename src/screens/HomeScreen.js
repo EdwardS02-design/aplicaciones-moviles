@@ -23,6 +23,7 @@ export default function HomeScreen({
   onOpenProfile,
   onOpenPet,
   onAddPet,
+  onManagePets,
 }) {
   const dogs = pets.filter((pet) => pet.emoji === '🐶' || pet.emoji === '🐕').length;
   const cats = pets.filter((pet) => pet.emoji === '🐱').length;
@@ -55,7 +56,12 @@ export default function HomeScreen({
         <StatsBar total={pets.length} dogs={dogs} cats={cats} />
 
         <View style={styles.listHeader}>
-          <Text style={styles.listTitle}>Mis mascotas</Text>
+          <View>
+            <Text style={styles.listTitle}>Mis mascotas</Text>
+            <TouchableOpacity accessibilityRole="button" onPress={onManagePets}>
+              <Text style={styles.manageText}>Administrar y ver citas ›</Text>
+            </TouchableOpacity>
+          </View>
           <TouchableOpacity
             accessibilityRole="button"
             style={styles.addButton}
@@ -124,6 +130,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   listTitle: { fontSize: 16, fontWeight: '800', color: colors.textDark },
+  manageText: { color: colors.brand, fontSize: 12, fontWeight: '700', marginTop: 4 },
   addButton: {
     backgroundColor: colors.primary,
     paddingVertical: 8,

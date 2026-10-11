@@ -4,35 +4,35 @@ import { colors } from '../theme/colors';
 
 export default function PetCard({ pet, onPress }) {
   return (
-      <TouchableOpacity
-          style={styles.petCard}
-          activeOpacity={0.7}
-          onPress={() => onPress?.(pet)}
-      >
-        {pet.photoUri ? (
-          <Image
-            source={{ uri: pet.photoUri }}
-            style={styles.petImage}
-            accessibilityLabel={`Foto de ${pet.name}`}
-          />
-        ) : (
-          <View style={[styles.petImage, { backgroundColor: pet.shade }]}>
-            <Text style={styles.petEmoji}>{pet.emoji}</Text>
-          </View>
-        )}
-
-        <View style={styles.petInfo}>
-          <Text style={styles.petName}>{pet.name}</Text>
-          <Text style={styles.petBreed}>{pet.breed}</Text>
-          <Text style={styles.petMeta}>{pet.age}   {pet.weight}</Text>
-          <View style={styles.nextRow}>
-            <Text style={styles.calendarIcon}>🗓️</Text>
-            <Text style={styles.nextText}>{pet.next}</Text>
-          </View>
+    <TouchableOpacity
+      style={styles.petCard}
+      activeOpacity={0.7}
+      onPress={() => onPress?.(pet)}
+    >
+      {pet.photoUri || pet.fotoUrl ? (
+        <Image
+          source={{ uri: pet.photoUri || pet.fotoUrl }}
+          style={styles.petImage}
+          accessibilityLabel={`Foto de ${pet.name}`}
+        />
+      ) : (
+        <View style={[styles.petImage, { backgroundColor: pet.shade }]}>
+          <Text style={styles.petEmoji}>{pet.emoji}</Text>
         </View>
+      )}
 
-        <Text style={styles.chevron}>›</Text>
-      </TouchableOpacity>
+      <View style={styles.petInfo}>
+        <Text style={styles.petName}>{pet.name}</Text>
+        <Text style={styles.petBreed}>{pet.breed}</Text>
+        <Text style={styles.petMeta}>{pet.age}   {pet.weight}</Text>
+        <View style={styles.nextRow}>
+          <Text style={styles.calendarIcon}>🗓️</Text>
+          <Text style={styles.nextText}>{pet.next}</Text>
+        </View>
+      </View>
+
+      <Text style={styles.chevron}>›</Text>
+    </TouchableOpacity>
   );
 }
 

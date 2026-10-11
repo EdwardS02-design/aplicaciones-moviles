@@ -14,6 +14,8 @@ import {
 import { colors } from '../theme/colors';
 import { formatReminderDate, parseReminderDate } from '../data/petcareValidation';
 import { schedulePetReminder } from '../services/deviceFeatures';
+import { useCuidador } from '../estado/CuidadorContext';
+import ModalNuevaCita from '../components/ModalNuevaCita';
 
 function getDefaultDate() {
   const tomorrow = new Date();
@@ -33,9 +35,11 @@ export default function AgendaScreen({
   onAddReminder,
   onRemoveReminder,
 }) {
+  const { citas, mascotas, agregarCita } = useCuidador();
   const [selectedPetId, setSelectedPetId] = useState(
     pets.length > 0 ? String(pets[0].id) : '',
   );
+  const [citaModalAbierto, setCitaModalAbierto] = useState(false);
   const [title, setTitle] = useState('');
   const [dateValue, setDateValue] = useState(getDefaultDate);
   const [timeValue, setTimeValue] = useState('09:00');
@@ -107,6 +111,15 @@ export default function AgendaScreen({
         <Text style={styles.subtitle}>
           Programa avisos locales para vacunas, controles y otros cuidados.
         </Text>
+        {mascotas.length > 0 ? (
+          <TouchableOpacity
+            accessibilityRole="button"
+            style={styles.citasButton}
+            onPress={() => setCitaModalAbierto(true)}
+          >
+            <Text style={styles.citasButtonText}>＋ Agregar cita</Text>
+          </TouchableOpacity>
+        ) : null}
       </View>
 
       <ScrollView
@@ -236,7 +249,36 @@ export default function AgendaScreen({
             );
           })
         )}
+        <View style={styles.citasSection}>
+          <Text style={styles.sectionTitle}>Citas agendadas</Text>
+          {citas.length === 0 ? (
+            <Text style={styles.emptyMessage}>Todavía no has agregado citas.</Text>
+          ) : (
+            citas.map((cita) => {
+              const mascota = mascotas.find((item) => item.id === cita.mascotaId);
+              return (
+                <View key={cita.id} style={styles.reminderCard}>
+                  <View style={styles.reminderInfo}>
+                    <Text style={styles.reminderTitle}>{cita.titulo}</Text>
+                    <Text style={styles.reminderMeta}>
+                      {mascota?.nombre || 'Mascota'} · {cita.fecha} · {cita.hora}
+                    </Text>
+                  </View>
+                </View>
+              );
+            })
+          )}
+        </View>
       </ScrollView>
+      <ModalNuevaCita
+        visible={citaModalAbierto}
+        onCerrar={() => setCitaModalAbierto(false)}
+        onGuardar={async (cita) => {
+          await agregarCita(cita);
+          setCitaModalAbierto(false);
+        }}
+        mascotas={mascotas}
+      />
     </SafeAreaView>
   );
 }
@@ -248,6 +290,16 @@ const styles = StyleSheet.create({
   backText: { color: colors.brand, fontSize: 15, fontWeight: '700' },
   title: { color: colors.textDark, fontSize: 23, fontWeight: '800', marginTop: 8 },
   subtitle: { color: colors.textMuted, fontSize: 13, lineHeight: 19, marginTop: 5 },
+  citasButton: {
+    alignSelf: 'flex-start',
+    marginTop: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    borderRadius: 12,
+    backgroundColor: '#eafaf5',
+  },
+  citasButtonText: { color: colors.primaryDark, fontSize: 13, fontWeight: '700' },
+  citasSection: { marginTop: 20 },
   content: { paddingHorizontal: 18, paddingBottom: 30 },
   formCard: {
     backgroundColor: colors.white,

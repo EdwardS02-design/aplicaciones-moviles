@@ -5,10 +5,15 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.petcare.aplicacionesmoviles"
+      "bundleIdentifier": "com.petcare.aplicacionesmoviles",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Para fotografiar a tu mascota.",
+        "NSPhotoLibraryUsageDescription": "Para elegir una foto de la galería.",
+        "NSLocationWhenInUseUsageDescription": "Para mostrarte lugares cercanos y guardar una ubicación."
+      }
     },
     "android": {
       "package": "com.petcare.aplicacionesmoviles",
@@ -16,6 +21,11 @@
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.RECORD_AUDIO"
+      ],
+      "permissions": [
+        "CAMERA",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
       ],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
@@ -25,7 +35,8 @@
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
     },
     "plugins": [
       [
@@ -39,7 +50,7 @@
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "PetCare usa tu ubicación solo cuando solicitas guardarla en el perfil de una mascota.",
+          "locationWhenInUsePermission": "PetCare usa tu ubicación para mostrarte lugares cercanos o cuando solicitas guardarla en el perfil de una mascota.",
           "locationAlwaysAndWhenInUsePermission": false,
           "locationAlwaysPermission": false,
           "isIosBackgroundLocationEnabled": false,
@@ -52,7 +63,9 @@
           "defaultChannel": "petcare-reminders",
           "color": "#2d8c7d"
         }
-      ]
+      ],
+      "expo-secure-store",
+      "expo-font"
     ]
   }
 }
