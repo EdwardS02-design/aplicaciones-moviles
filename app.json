@@ -1,0 +1,59 @@
+{
+  "expo": {
+    "name": "Petcare",
+    "slug": "petcare",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.petcare.aplicacionesmoviles"
+    },
+    "android": {
+      "package": "com.petcare.aplicacionesmoviles",
+      "blockedPermissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "PetCare usa tus fotos para asignar una imagen de perfil a tu mascota.",
+          "cameraPermission": "PetCare usa la cámara únicamente cuando eliges tomar una foto de tu mascota.",
+          "microphonePermission": false
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "PetCare usa tu ubicación solo cuando solicitas guardarla en el perfil de una mascota.",
+          "locationAlwaysAndWhenInUsePermission": false,
+          "locationAlwaysPermission": false,
+          "isIosBackgroundLocationEnabled": false,
+          "isAndroidBackgroundLocationEnabled": false
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "defaultChannel": "petcare-reminders",
+          "color": "#2d8c7d"
+        }
+      ]
+    ]
+  }
+}
