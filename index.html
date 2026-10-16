@@ -1,0 +1,1113 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PetCare · Avance APF2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#e8ece8; --paper:#f7f9f7; --card:#ffffff; --line:#dfe7e2;
+  --brand:#2b7a6d; --primary:#2db7a0; --deep:#135a51; --mint:#eafaf5; --mint2:#d6f1e8;
+  --ink:#1d2a2b; --muted:#64726d; --soft:#8a9792;
+  --warn:#b23b35; --warnbg:#fdeeec; --amber:#a86a12; --amberbg:#fdf4e3;
+  --code:#13221f; --codeline:#1b2e2a;
+  --sans:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:#1b2b28;font-family:var(--sans);color:var(--ink);overflow:hidden;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
+
+/* ---------- escenario 16:9 escalado ---------- */
+#viewport{position:fixed;inset:0 0 56px 0;display:grid;place-items:center}
+#stage{width:1280px;height:720px;position:relative;transform-origin:center center;flex:none}
+.slide{position:absolute;inset:0;background:var(--paper);border-radius:6px;overflow:hidden;
+  opacity:0;visibility:hidden;transform:translateX(24px);transition:opacity .35s ease,transform .35s ease,visibility 0s .35s;
+  padding:34px 48px 30px;display:flex;flex-direction:column}
+.slide.active{opacity:1;visibility:visible;transform:none;transition:opacity .35s ease,transform .35s ease}
+.slide.prev{transform:translateX(-24px)}
+.slide::before{content:"";position:absolute;width:520px;height:520px;right:-180px;top:-240px;border-radius:50%;
+  background:radial-gradient(circle,var(--mint2) 0%,transparent 68%);pointer-events:none}
+
+/* ---------- cabecera de diapositiva ---------- */
+.top{display:flex;align-items:center;gap:12px;margin-bottom:14px;position:relative}
+.chip{display:inline-flex;align-items:center;gap:8px;background:var(--brand);color:#fff;font-weight:700;font-size:12px;
+  letter-spacing:.04em;text-transform:uppercase;padding:6px 12px;border-radius:999px}
+.chip .w{background:rgba(255,255,255,.2);padding:1px 7px;border-radius:999px}
+.part{font-size:12px;font-weight:700;color:var(--brand);background:var(--mint);padding:6px 11px;border-radius:999px}
+.top .brand{margin-left:auto;font-weight:800;font-size:13px;color:var(--brand);display:flex;align-items:center;gap:6px}
+h1{font-size:34px;line-height:1.12;font-weight:800;letter-spacing:-.02em;position:relative}
+h1 em{font-style:normal;color:var(--primary)}
+.lead{color:var(--muted);font-size:15px;margin-top:6px;max-width:900px;position:relative}
+
+/* ---------- distribución criterio ---------- */
+.cols{display:grid;grid-template-columns:350px minmax(0,1fr);gap:22px;margin-top:18px;flex:1;min-height:0;position:relative}
+.req{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px 18px 16px;display:flex;flex-direction:column;min-height:0}
+.req .lbl{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--brand);display:flex;align-items:center;gap:6px}
+.req .lbl .lvl{background:var(--primary);color:#fff;border-radius:6px;padding:2px 7px;letter-spacing:.02em}
+.req blockquote{margin-top:10px;font-size:14.5px;line-height:1.5;font-weight:600;color:var(--ink);border-left:3px solid var(--primary);padding-left:12px}
+.req .desc{margin-top:10px;font-size:12px;color:var(--muted);line-height:1.5}
+.checks{margin-top:14px;list-style:none;display:flex;flex-direction:column;gap:8px;overflow:auto}
+.checks li{display:grid;grid-template-columns:20px 1fr;gap:8px;font-size:12.5px;line-height:1.4;color:var(--ink)}
+.checks li::before{content:"✓";width:20px;height:20px;border-radius:50%;background:var(--mint);color:var(--brand);
+  font-weight:800;font-size:11px;display:grid;place-items:center}
+.checks b{font-weight:700}
+.ref{font-family:var(--mono);font-size:11px;color:var(--brand);background:var(--mint);padding:1px 5px;border-radius:4px;white-space:nowrap}
+.ev{display:flex;flex-direction:column;min-height:0;min-width:0;gap:12px}
+.evhead{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--soft)}
+
+/* ---------- panel de código ---------- */
+.codebox{background:var(--code);border-radius:16px;display:flex;flex-direction:column;min-height:0;flex:1;overflow:hidden;box-shadow:0 10px 30px -12px rgba(19,34,31,.5)}
+.tabs{display:flex;gap:2px;padding:8px 8px 0;background:#0e1916;flex-wrap:wrap}
+.tab{font-family:var(--mono);font-size:11.5px;color:#8fb0a8;padding:7px 12px;border-radius:9px 9px 0 0}
+.tab:hover{color:#d6f1e8}
+.tab.on{background:var(--code);color:#fff}
+.filebar{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11.5px;color:#8fb0a8;padding:9px 14px;border-bottom:1px solid #20352f}
+.filebar .dot{width:8px;height:8px;border-radius:50%;background:var(--primary)}
+.filebar .note{margin-left:auto;font-family:var(--sans);font-size:11.5px;color:#cfe8e1}
+pre.code{flex:1;overflow:auto;padding:10px 0 14px;font-family:var(--mono);font-size:12.3px;line-height:1.6;color:#e2eeea;counter-reset:none}
+pre.code .ln{display:block;padding:0 14px 0 0;white-space:pre}
+pre.code .ln .n{display:inline-block;width:46px;text-align:right;padding-right:14px;color:#4d6a62;user-select:none}
+pre.code .ln.hl{background:rgba(45,183,160,.16);box-shadow:inset 3px 0 0 var(--primary)}
+pre.code .ln.hl .n{color:#7fd8c6}
+.k{color:#ff9fb2}.s{color:#b5e48c}.c{color:#6f8c84;font-style:italic}.m{color:#f6c177}.t{color:#7cc7ff}.f{color:#ffd580}
+.codepane{display:none;flex:1;min-height:0;flex-direction:column}
+.codepane.on{display:flex}
+
+/* ---------- tarjetas y tablas ---------- */
+.grid{display:grid;gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.card h3{font-size:14px;font-weight:800;display:flex;align-items:center;gap:8px}
+.card p{font-size:12.5px;color:var(--muted);line-height:1.45;margin-top:5px}
+.card .ico{width:30px;height:30px;border-radius:9px;background:var(--mint);display:grid;place-items:center;font-size:16px;flex:none}
+.msg{display:inline-block;margin-top:6px;font-size:11.5px;color:var(--warn);background:var(--warnbg);padding:3px 8px;border-radius:6px}
+.msg.ok{color:var(--brand);background:var(--mint)}
+table.tbl{width:100%;border-collapse:separate;border-spacing:0;font-size:12.5px;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+table.tbl th{background:var(--mint);color:var(--brand);text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:9px 12px}
+table.tbl td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top;line-height:1.45}
+table.tbl td:first-child{font-family:var(--mono);font-weight:600;color:var(--deep);white-space:nowrap}
+table.tbl tr.click{cursor:pointer}
+table.tbl tr.click:hover td{background:#f3faf7}
+
+/* ---------- teléfono simulado ---------- */
+.phone{width:262px;height:520px;border-radius:38px;background:#1d2a2b;padding:10px;flex:none;box-shadow:0 20px 40px -18px rgba(19,34,31,.6)}
+.screen{width:100%;height:100%;border-radius:30px;background:var(--bg);overflow:hidden;display:flex;flex-direction:column}
+.notch{height:22px;display:flex;justify-content:center;align-items:flex-end}
+.notch span{width:80px;height:6px;border-radius:6px;background:#c9d3ce}
+.app{padding:10px 14px;flex:1;overflow:auto}
+.app .hello{font-weight:800;font-size:15px}
+.app .sub{font-size:10.5px;color:var(--muted)}
+.stats{margin-top:10px;background:#5fc4b3;border-radius:14px;color:#fff;display:flex;justify-content:space-around;padding:9px 4px;font-size:9px;text-align:center}
+.stats b{display:block;font-size:15px}
+.dhead{display:flex;justify-content:space-between;align-items:center;margin:14px 0 8px}
+.dhead .ti{font-weight:800;font-size:12.5px}
+.dhead .st{font-size:9px;color:var(--muted)}
+.refresh{background:var(--mint);color:var(--brand);font-weight:700;font-size:10px;padding:5px 9px;border-radius:9px}
+.mcard{min-height:92px;background:#fff;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:12px;text-align:center;font-size:10.5px;color:var(--muted)}
+.mcard .rbtn{background:var(--mint);color:var(--brand);font-weight:700;font-size:10px;padding:5px 10px;border-radius:8px}
+.spin{width:20px;height:20px;border-radius:50%;border:3px solid var(--mint2);border-top-color:var(--primary);animation:sp 0.8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dimg{background:#fff;border-radius:12px;overflow:hidden}
+.dimg .ph{height:74px;background:#eaf0eb;display:grid;place-items:center;font-size:26px}
+.dimg img{width:100%;height:74px;object-fit:cover;display:block;background:#eaf0eb}
+.dimg .bn{font-size:9.5px;font-weight:700;padding:5px 7px;text-transform:capitalize;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{font-size:12.5px;font-weight:700;padding:8px 13px;border-radius:10px;background:var(--card);border:1px solid var(--line);color:var(--muted)}
+.seg button.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.json{background:var(--code);color:#e2eeea;border-radius:14px;font-family:var(--mono);font-size:11px;line-height:1.55;padding:12px 14px;overflow:auto;white-space:pre}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--brand)}
+.live i{width:8px;height:8px;border-radius:50%;background:var(--primary);box-shadow:0 0 0 4px var(--mint2)}
+.live.err{color:var(--warn)} .live.err i{background:var(--warn);box-shadow:0 0 0 4px var(--warnbg)}
+
+/* ---------- portada ---------- */
+.cover{background:linear-gradient(135deg,#135a51 0%,#2b7a6d 55%,#2db7a0 100%);color:#fff;padding:56px 64px}
+.cover::before{background:radial-gradient(circle,rgba(255,255,255,.18) 0%,transparent 65%);width:760px;height:760px;right:-260px;top:-300px}
+.cover .kick{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.85}
+.cover h1{font-size:76px;margin-top:18px;letter-spacing:-.04em}
+.cover .tag{font-size:21px;font-weight:500;opacity:.92;margin-top:10px;max-width:640px;line-height:1.4}
+.cover .meta{margin-top:auto;display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:24px;font-size:13.5px;line-height:1.6;position:relative}
+.cover .meta b{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.7;margin-bottom:4px;font-weight:700}
+.paw{position:absolute;right:70px;top:150px;font-size:180px;opacity:.16;transform:rotate(-14deg)}
+.hint{position:absolute;right:64px;bottom:22px;font-size:12px;opacity:.7}
+kbd{font-family:var(--mono);font-size:11px;background:rgba(255,255,255,.18);padding:2px 6px;border-radius:5px}
+
+/* ---------- mapa de rúbrica ---------- */
+.crit{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:22px;position:relative}
+.crit button{text-align:left;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:8px;min-height:250px;transition:transform .2s,box-shadow .2s,border-color .2s}
+.crit button:hover{transform:translateY(-4px);box-shadow:0 14px 28px -16px rgba(19,90,81,.45);border-color:var(--primary)}
+.crit .num{font-size:12px;font-weight:800;color:var(--primary)}
+.crit .nm{font-size:15px;font-weight:800;line-height:1.25}
+.crit .pc{font-size:38px;font-weight:800;color:var(--brand);margin-top:auto;letter-spacing:-.03em}
+.crit .ex{font-size:11.5px;color:var(--muted);line-height:1.4}
+.crit .go{font-size:11px;font-weight:700;color:var(--brand)}
+.wbar{display:flex;height:12px;border-radius:999px;overflow:hidden;margin-top:18px;position:relative}
+.wbar span{display:block;height:100%}
+.levels{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px;position:relative}
+.levels div{font-size:11.5px;color:var(--muted);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 10px}
+.levels div b{display:block;color:var(--ink);font-size:12.5px}
+.levels div.top1{background:var(--brand);color:#d6f1e8;border-color:var(--brand)}
+.levels div.top1 b{color:#fff}
+
+/* ---------- flujo de integración ---------- */
+.flow{position:relative;height:420px;flex:none;margin-bottom:10px}
+.node{position:absolute;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:10px 12px;width:200px;font-size:11.5px;color:var(--muted);line-height:1.35;cursor:pointer;transition:border-color .2s,box-shadow .2s,opacity .2s}
+.node b{display:block;color:var(--ink);font-size:13px;margin-bottom:2px}
+.node .ref{font-size:10px}
+.node.k1{border-color:#9ad9cb}.node.on{border-color:var(--primary);box-shadow:0 0 0 4px var(--mint2)}
+.node.center{background:var(--brand);border-color:var(--brand);color:#d6f1e8;width:230px}
+.node.center b{color:#fff}
+.flow.dim .node:not(.on){opacity:.4}
+.flow svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.flow svg path{fill:none;stroke:#b9cfc8;stroke-width:2}
+.flow svg path.on{stroke:var(--primary);stroke-width:3}
+.flow svg text{font-family:var(--sans);font-size:10.5px;font-weight:700;fill:var(--brand)}
+.detail{background:var(--mint);border-radius:14px;padding:12px 14px;font-size:12.5px;line-height:1.5;color:var(--deep);min-height:62px}
+
+/* ---------- controles ---------- */
+#ui{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);display:flex;align-items:center;gap:6px;background:rgba(14,25,22,.82);
+  backdrop-filter:blur(8px);padding:6px 8px;border-radius:999px;color:#d6f1e8;font-size:12px;z-index:10;transition:opacity .3s}
+#ui button{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:15px}
+#ui button:hover{background:rgba(255,255,255,.12)}
+#ui .cnt{min-width:58px;text-align:center;font-family:var(--mono);font-size:12px}
+#bar{position:fixed;left:0;top:0;height:3px;background:var(--primary);z-index:11;transition:width .35s}
+#ov{position:fixed;inset:0;background:rgba(14,25,22,.92);z-index:20;display:none;padding:40px;overflow:auto}
+#ov.on{display:block}
+#ov h2{color:#fff;font-size:20px;margin-bottom:18px}
+#ov .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+#ov .list button{text-align:left;background:#1d2a2b;border:1px solid #2c403b;border-radius:14px;padding:14px;color:#d6f1e8}
+#ov .list button:hover,#ov .list button.cur{border-color:var(--primary)}
+#ov .list small{display:block;color:#7fa69c;font-size:11px;margin-bottom:4px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+#ov .list span{font-size:14px;font-weight:700}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div id="viewport"><div id="stage">
+
+<!-- =============== 1. PORTADA =============== -->
+<section class="slide cover" data-title="Portada" data-group="Inicio">
+  <div class="paw">🐾</div>
+  <div class="kick">Desarrollo de Aplicaciones Móviles · Avance de Proyecto Final 02</div>
+  <h1>PetCare</h1>
+  <p class="tag">Evidencia del avance contra la rúbrica APF2: cada criterio, su exigencia máxima y el código que la cumple.</p>
+  <div class="meta">
+    <div><b>Integrantes</b>Lizarraga Meza, Fernando Daniel<br>Quispe Velasquez, Yair<br>Marticorena Garcia, Edward<br>Zuluaga, Elmer</div>
+    <div><b>Docente</b>Machuca Ñuflo, Omar David<br><br><b>Sección</b>35346</div>
+    <div><b>Stack</b>React Native 0.86 · React 19<br>Expo SDK 57 · AsyncStorage<br>API pública Dog CEO</div>
+  </div>
+  <div class="hint">Navega con <kbd>←</kbd> <kbd>→</kbd> · índice con <kbd>O</kbd></div>
+</section>
+
+<!-- =============== 2. CONTEXTO =============== -->
+<section class="slide" data-title="Contexto y arquitectura" data-group="Inicio">
+  <div class="top"><span class="chip">Contexto</span><span class="brand">🐾 PetCare</span></div>
+  <h1>Cuidado de mascotas <em>centralizado</em> en el teléfono</h1>
+  <p class="lead">Los dueños guardan vacunas, citas y pesos en libretas o de memoria; se pierden datos y se olvidan controles. PetCare los registra en el dispositivo y avisa a tiempo.</p>
+  <div class="grid" style="grid-template-columns:1fr 1fr 1.05fr;margin-top:20px;flex:1;min-height:0;position:relative">
+    <div class="grid" style="align-content:start">
+      <div class="card"><h3><span class="ico">🐶</span>Fichas de mascotas</h3><p>Alta, detalle y edición con foto (cámara/galería) y ubicación puntual.</p></div>
+      <div class="card"><h3><span class="ico">📊</span>Panel principal</h3><p>Totales por especie con <span class="ref">StatsBar</span> y listado con <span class="ref">PetCard</span>.</p></div>
+      <div class="card"><h3><span class="ico">🗓️</span>Agenda</h3><p>Recordatorios con notificación local programada y cancelable.</p></div>
+    </div>
+    <div class="grid" style="align-content:start">
+      <div class="card"><h3><span class="ico">🌐</span>Descubre perros</h3><p>API pública Dog CEO con estados de carga, error, vacío y reintento.</p></div>
+      <div class="card"><h3><span class="ico">💾</span>Persistencia local</h3><p>Sesión, mascotas y recordatorios en AsyncStorage, validados al leer.</p></div>
+      <div class="card"><h3><span class="ico">📦</span>APK Android</h3><p>Build EAS perfil <span class="ref">preview</span> terminado el 15/10/2026.</p></div>
+    </div>
+    <div class="json" style="font-size:11.5px;line-height:1.6">App.js            <span class="c">// estado global, carga/guardado, rutas</span>
+index.js          <span class="c">// registerRootComponent(App)</span>
+src/
+  components/     <span class="c">// BottomNav, DogDiscoverySection,</span>
+                  <span class="c">// PetCard, StatsBar</span>
+  data/           <span class="c">// pets.js, petcareValidation.js</span>
+  hooks/          <span class="c">// useDogImages.js  ← hook propio</span>
+  screens/        <span class="c">// Login, Home, AddPet, PetDetail,</span>
+                  <span class="c">// Agenda, Profile, ComingSoon</span>
+  services/       <span class="c">// deviceFeatures.js (cámara,</span>
+                  <span class="c">// GPS, notificaciones)</span>
+  theme/          <span class="c">// colors.js</span>
+tests/            <span class="c">// petcareValidation.test.js</span>
+README.md · eas.json · app.json</div>
+  </div>
+</section>
+
+<!-- =============== 3. MAPA DE LA RÚBRICA =============== -->
+<section class="slide" data-title="La rúbrica APF2" data-group="Inicio">
+  <div class="top"><span class="chip">Rúbrica APF2</span><span class="brand">🐾 PetCare</span></div>
+  <h1>Cinco criterios, <em>un objetivo</em>: nivel Excelente</h1>
+  <p class="lead">Haz clic en un criterio para saltar a su evidencia. Cada uno ocupa dos diapositivas: lo que exige la rúbrica y dónde se cumple en el código.</p>
+  <div class="crit">
+    <button data-go="c1"><span class="num">Criterio 1</span><span class="nm">Hooks y lógica de componentes funcionales</span><span class="ex">useState, useEffect, ciclo de vida y organización de la lógica.</span><span class="pc">20%</span><span class="go">Ver evidencia →</span></button>
+    <button data-go="c2"><span class="num">Criterio 2</span><span class="nm">Consumo de API y renderizado de datos</span><span class="ex">Consumir, procesar y mostrar datos útiles con retroalimentación.</span><span class="pc">25%</span><span class="go">Ver evidencia →</span></button>
+    <button data-go="c3"><span class="num">Criterio 3</span><span class="nm">Estados de carga, error y experiencia</span><span class="ex">Loading, errores y vacíos tratados de forma clara.</span><span class="pc">15%</span><span class="go">Ver evidencia →</span></button>
+    <button data-go="c4"><span class="num">Criterio 4</span><span class="nm">Persistencia local con AsyncStorage</span><span class="ex">Guardar, recuperar y usar datos dentro del flujo.</span><span class="pc">20%</span><span class="go">Ver evidencia →</span></button>
+    <button data-go="c5"><span class="num">Criterio 5</span><span class="nm">Integración funcional y documentación</span><span class="ex">Flujo coherente + README con objetivo, arquitectura y ejecución.</span><span class="pc">15%</span><span class="go">Ver evidencia →</span></button>
+  </div>
+  <div class="wbar"><span style="width:21.05%;background:#135a51"></span><span style="width:26.32%;background:#2b7a6d"></span><span style="width:15.79%;background:#2db7a0"></span><span style="width:21.05%;background:#5fc4b3"></span><span style="width:15.79%;background:#9ad9cb"></span></div>
+  <div class="levels">
+    <div class="top1"><b>5 · Excelente · 18–20</b>Avance funcional que integra hooks, API, persistencia y estados de uso.</div>
+    <div><b>4 · Bueno · 15–17</b>Mayoría de elementos, con detalles.</div>
+    <div><b>3 · Regular · 12–14</b>Avance parcial, limitaciones técnicas.</div>
+    <div><b>2 · Deficiente · 10–11</b>Deficiencias en datos o estabilidad.</div>
+    <div><b>1 · Insuficiente · &lt;10</b>No cumple los mínimos.</div>
+  </div>
+</section>
+
+<!-- =============== 4. C1a HOOKS: INVENTARIO =============== -->
+<section class="slide" id="c1" data-title="Hooks: inventario" data-group="Criterio 1 · Hooks">
+  <div class="top"><span class="chip">Criterio 1 · Hooks <span class="w">20%</span></span><span class="part">1 / 2 · Qué hooks y dónde</span><span class="brand">🐾 PetCare</span></div>
+  <h1>Hooks aplicados con <em>responsabilidades separadas</em></h1>
+  <div class="cols">
+    <div class="req">
+      <div class="lbl">Exigencia máxima <span class="lvl">Excelente</span></div>
+      <blockquote>“Uso correcto y consistente de hooks, lógica clara del componente, actualización adecuada del estado y efectos bien implementados.”</blockquote>
+      <p class="desc">Se evalúa useState y useEffect, la comprensión del ciclo de vida en componentes funcionales y la organización de la lógica.</p>
+      <ul class="checks">
+        <li><span><b>Consistente:</b> 6 tipos de hook en 6 archivos, siempre en el nivel superior del componente.</span></li>
+        <li><span><b>Estado bien actualizado:</b> actualizaciones funcionales <span class="ref">setPets((current) =&gt; …)</span> <span class="ref">App.js:144</span></span></li>
+        <li><span><b>Lógica separada:</b> red en un hook propio, efectos nativos en <span class="ref">services/</span>, validación pura en <span class="ref">data/</span>.</span></li>
+      </ul>
+    </div>
+    <div class="ev">
+      <div class="evhead">Evidencia en el código · haz clic en una fila para ver el fragmento</div>
+      <table class="tbl" id="hookTable">
+        <tr><th>Hook</th><th>Dónde</th><th>Para qué</th></tr>
+        <tr class="click" data-snip="h-state"><td>useState</td><td><span class="ref">App.js:38-46</span> <span class="ref">useDogImages.js:7-10</span> <span class="ref">AgendaScreen.js:36-43</span> <span class="ref">AddPetScreen.js:25-40</span> <span class="ref">LoginScreen.js:14-15</span></td><td>9 estados globales (sesión, mascotas, recordatorios, vista…) y estado de cada formulario.</td></tr>
+        <tr class="click" data-snip="h-effect"><td>useEffect</td><td><span class="ref">App.js:77</span> <span class="ref">App.js:81-115</span> <span class="ref">useDogImages.js:13-48</span></td><td>Carga inicial, guardado reactivo y petición HTTP, todos con limpieza.</td></tr>
+        <tr class="click" data-snip="h-cb"><td>useCallback</td><td><span class="ref">App.js:49</span> <span class="ref">useDogImages.js:11</span></td><td>Funciones estables: <code>loadSavedData</code> (efecto + botón Reintentar) y <code>retry</code>.</td></tr>
+        <tr class="click" data-snip="h-ref"><td>useRef</td><td><span class="ref">App.js:47</span></td><td><code>persistenceQueue</code>: encola escrituras sin provocar renders.</td></tr>
+        <tr class="click" data-snip="h-memo"><td>useMemo</td><td><span class="ref">AgendaScreen.js:44-47</span></td><td>Mascota seleccionada derivada de <code>[pets, selectedPetId]</code>.</td></tr>
+        <tr class="click" data-snip="h-custom"><td>Hook propio</td><td><span class="ref">useDogImages.js:50</span></td><td>Expone <code>{ images, isLoading, error, retry }</code>; el componente solo renderiza.</td></tr>
+      </table>
+      <div class="codebox" style="flex:1">
+        <div class="filebar"><span class="dot"></span><span class="fname"></span><span class="note"></span></div>
+        <pre class="code" data-target></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============== 5. C1b HOOKS: CICLO DE VIDA =============== -->
+<section class="slide" data-title="Hooks: ciclo de vida" data-group="Criterio 1 · Hooks">
+  <div class="top"><span class="chip">Criterio 1 · Hooks <span class="w">20%</span></span><span class="part">2 / 2 · Efectos y ciclo de vida</span><span class="brand">🐾 PetCare</span></div>
+  <h1>Efectos con <em>dependencias exactas</em> y limpieza</h1>
+  <div class="cols">
+    <div class="req">
+      <div class="lbl">Exigencia máxima <span class="lvl">Excelente</span></div>
+      <blockquote>“…efectos bien implementados”, mostrando que se entiende el ciclo de vida.</blockquote>
+      <ul class="checks">
+        <li><span><b>Montaje:</b> la carga de datos corre una sola vez, porque <code>loadSavedData</code> es estable (useCallback con <code>[]</code>).</span></li>
+        <li><span><b>Actualización:</b> el guardado se dispara solo cuando cambian <code>[isReady, pets, reminders, user]</code>.</span></li>
+        <li><span><b>Desmontaje:</b> la limpieza aborta el <code>fetch</code>, cancela el timeout y descarta respuestas obsoletas con <code>isCurrent</code>.</span></li>
+        <li><span><b>Reintento declarativo:</b> <code>retry</code> incrementa <code>requestNumber</code> y eso vuelve a ejecutar el efecto.</span></li>
+      </ul>
+    </div>
+    <div class="ev">
+      <div class="codebox">
+        <div class="tabs"><button class="tab on" data-pane="0">useDogImages.js</button><button class="tab" data-pane="1">App.js · guardado</button><button class="tab" data-pane="2">App.js · carga inicial</button></div>
+        <div class="codepane on"><div class="filebar"><span class="dot"></span>src/hooks/useDogImages.js<span class="note">Limpieza: abortar petición + ignorar respuestas viejas</span></div><pre class="code" data-snip="dog-hook" data-hl="10-11,13-16,43-48"></pre></div>
+        <div class="codepane"><div class="filebar"><span class="dot"></span>App.js<span class="note">Se ejecuta en cada cambio de datos; cleanup marca isCurrent = false</span></div><pre class="code" data-snip="app-persist" data-hl="81-82,84,112-115"></pre></div>
+        <div class="codepane"><div class="filebar"><span class="dot"></span>App.js<span class="note">useCallback estable → el efecto corre una vez al montar</span></div><pre class="code" data-snip="app-load" data-hl="49,75,77-79"></pre></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============== 6. C2a API: PETICIÓN =============== -->
+<section class="slide" id="c2" data-title="API: petición y validación" data-group="Criterio 2 · API">
+  <div class="top"><span class="chip">Criterio 2 · API <span class="w">25%</span></span><span class="part">1 / 2 · Consumo y procesamiento</span><span class="brand">🐾 PetCare</span></div>
+  <h1>Dog CEO: petición <em>robusta</em> y respuesta validada</h1>
+  <div class="cols">
+    <div class="req">
+      <div class="lbl">Exigencia máxima <span class="lvl">Excelente</span></div>
+      <blockquote>“Consumo correcto de API, manejo adecuado de peticiones, renderizado claro y útil de datos, con retroalimentación visual al usuario.”</blockquote>
+      <ul class="checks">
+        <li><span><b>Endpoint:</b> <span class="ref">GET dog.ceo/api/breeds/image/random/6</span> <span class="ref">useDogImages.js:4</span></span></li>
+        <li><span><b>Tiempo límite:</b> 12 s con <code>AbortController</code> <span class="ref">:14-16</span></span></li>
+        <li><span><b>HTTP verificado:</b> <code>!response.ok</code> lanza un error con el código <span class="ref">:24-26</span></span></li>
+        <li><span><b>Contrato JSON:</b> exige <code>status === 'success'</code> y un array <span class="ref">petcareValidation.js:65-72</span></span></li>
+        <li><span><b>Seguridad:</b> solo acepta URLs <code>https://images.dog.ceo/</code> <span class="ref">:74-78</span></span></li>
+        <li><span><b>Probado:</b> test unitario de la respuesta <span class="ref">tests/…test.js:49</span></span></li>
+      </ul>
+    </div>
+    <div class="ev">
+      <div class="codebox">
+        <div class="tabs"><button class="tab on" data-pane="0">1 · Petición</button><button class="tab" data-pane="1">2 · Validación</button><button class="tab" data-pane="2">3 · Prueba</button></div>
+        <div class="codepane on"><div class="filebar"><span class="dot"></span>src/hooks/useDogImages.js<span class="note">fetch → status HTTP → JSON → validación → estado</span></div><pre class="code" data-snip="dog-hook" data-hl="14,16,23-28,30"></pre></div>
+        <div class="codepane"><div class="filebar"><span class="dot"></span>src/data/petcareValidation.js<span class="note">Función pura, reutilizable y testeable</span></div><pre class="code" data-snip="dog-parse" data-hl="67-69,74-78"></pre></div>
+        <div class="codepane"><div class="filebar"><span class="dot"></span>tests/petcareValidation.test.js<span class="note">npm test → 4 aprobadas, 0 fallidas</span></div><pre class="code" data-snip="dog-test" data-hl="49,57"></pre></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============== 7. C2b API: RENDERIZADO EN VIVO =============== -->
+<section class="slide" data-title="API: renderizado en vivo" data-group="Criterio 2 · API">
+  <div class="top"><span class="chip">Criterio 2 · API <span class="w">25%</span></span><span class="part">2 / 2 · Renderizado y demo en vivo</span><span class="brand">🐾 PetCare</span></div>
+  <h1>Datos que el usuario <em>ve y entiende</em></h1>
+  <div style="display:grid;grid-template-columns:262px minmax(0,1fr) minmax(0,1fr);gap:22px;margin-top:16px;flex:1;min-height:0;position:relative">
+    <div class="phone"><div class="screen"><div class="notch"><span></span></div><div class="app">
+      <div class="hello">Hola, fernando 👋</div><div class="sub">Así están tus mascotas hoy</div>
+      <div class="stats"><div>Total<b>3</b></div><div>Perros<b>2</b></div><div>Gatos<b>1</b></div></div>
+      <div class="dhead"><div><div class="ti">Descubre perros</div><div class="st">Imágenes de la API pública Dog CEO</div></div><button class="refresh" id="liveRefresh">Actualizar</button></div>
+      <div id="liveBody"></div>
+    </div></div></div>
+    <div class="ev">
+      <div class="evhead">Respuesta real de la API <span class="live" id="liveStatus" style="margin-left:8px"><i></i>esperando…</span></div>
+      <div class="json" id="liveJson" style="flex:1">// Al entrar a esta diapositiva se llama a la API real</div>
+      <div class="card"><h3><span class="ico">🔁</span>Mismo flujo que la app</h3><p>Esta demo usa el mismo endpoint, el límite de 12 s y el filtro de <code>parseDogImageResponse</code>. Pulsa <b>Actualizar</b> en el teléfono para pedir otras 6 imágenes.</p></div>
+    </div>
+    <div class="ev">
+      <div class="codebox">
+        <div class="filebar"><span class="dot"></span>src/components/DogDiscoverySection.js<span class="note">cuadrícula 2 × 3</span></div>
+        <pre class="code" data-snip="dog-render" data-hl="13-17,68-82"></pre>
+      </div>
+      <ul class="checks" style="margin-top:0">
+        <li><span><b>Útil:</b> la raza se obtiene de la URL de la imagen <span class="ref">:13-17</span></span></li>
+        <li><span><b>Accesible:</b> <code>accessibilityLabel</code> “Perro de raza …” <span class="ref">:75</span></span></li>
+        <li><span><b>Integrado:</b> se renderiza en el inicio <span class="ref">HomeScreen.js:78</span></span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- =============== 8. C3a ESTADOS: SIMULADOR =============== -->
+<section class="slide" id="c3" data-title="Estados: los 4 de la API" data-group="Criterio 3 · Estados y UX">
+  <div class="top"><span class="chip">Criterio 3 · Estados y UX <span class="w">15%</span></span><span class="part">1 / 2 · Carga, error, vacío y éxito</span><span class="brand">🐾 PetCare</span></div>
+  <h1>Cuatro estados excluyentes: <em>el usuario siempre sabe qué pasa</em></h1>
+  <div style="display:grid;grid-template-columns:300px 262px minmax(0,1fr);gap:22px;margin-top:16px;flex:1;min-height:0;position:relative">
+    <div class="req">
+      <div class="lbl">Exigencia máxima <span class="lvl">Excelente</span></div>
+      <blockquote>“Maneja correctamente loading, error y estados vacíos, brindando una experiencia clara al usuario.”</blockquote>
+      <div class="evhead" style="margin-top:16px">Prueba cada estado</div>
+      <div class="seg" id="stateSeg" style="margin-top:8px">
+        <button data-st="loading" class="on">Carga</button><button data-st="error">Error</button><button data-st="empty">Vacío</button><button data-st="ok">Éxito</button>
+      </div>
+      <div class="detail" id="stateDetail" style="margin-top:12px"></div>
+    </div>
+    <div class="phone"><div class="screen"><div class="notch"><span></span></div><div class="app">
+      <div class="hello">Hola, fernando 👋</div><div class="sub">Así están tus mascotas hoy</div>
+      <div class="dhead"><div><div class="ti">Descubre perros</div><div class="st">Imágenes de la API pública Dog CEO</div></div><button class="refresh" id="simRefresh">Actualizar</button></div>
+      <div id="simBody"></div>
+    </div></div></div>
+    <div class="ev">
+      <div class="codebox">
+        <div class="filebar"><span class="dot"></span>src/components/DogDiscoverySection.js<span class="note" id="simNote"></span></div>
+        <pre class="code" data-snip="dog-states" id="simCode"></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============== 9. C3b ESTADOS EN TODA LA APP =============== -->
+<section class="slide" data-title="Estados: en toda la app" data-group="Criterio 3 · Estados y UX">
+  <div class="top"><span class="chip">Criterio 3 · Estados y UX <span class="w">15%</span></span><span class="part">2 / 2 · Más allá de la API</span><span class="brand">🐾 PetCare</span></div>
+  <h1>Las situaciones excepcionales se tratan <em>en todo el flujo</em></h1>
+  <p class="lead">La rúbrica pide tratar los estados “durante el consumo <b>y gestión de datos</b>”. Los errores se muestran con <code>accessibilityRole="alert"</code>.</p>
+  <div class="grid" style="grid-template-columns:repeat(3,1fr);margin-top:14px;position:relative">
+    <div class="card"><h3><span class="ico">⏳</span>Arranque de la app</h3><p>Pantalla de carga mientras se leen los datos; si la lectura falla, aparece un botón Reintentar que vuelve a llamar a <code>loadSavedData</code>.</p><span class="ref">App.js:175-195</span><br><span class="msg">No se pudieron cargar tus datos</span></div>
+    <div class="card"><h3><span class="ico">💾</span>Guardado fallido</h3><p>El error de <code>AsyncStorage.multiSet</code> pasa a <code>storageError</code> y se muestra en Inicio, Login, Perfil, Agenda y Formulario.</p><span class="ref">App.js:101-107</span> <span class="ref">HomeScreen.js:49-53</span><br><span class="msg">No se pudieron guardar los cambios…</span></div>
+    <div class="card"><h3><span class="ico">✍️</span>Validación de formularios</h3><p>Correo con expresión regular y nombre/raza obligatorios, antes de cambiar el estado.</p><span class="ref">LoginScreen.js:19-21</span> <span class="ref">AddPetScreen.js:68-70</span><br><span class="msg">Ingresa un correo electrónico válido.</span></div>
+    <div class="card"><h3><span class="ico">🔐</span>Permisos denegados</h3><p>Cámara, galería, GPS y notificaciones explican qué permiso falta; spinner mientras dura la acción.</p><span class="ref">deviceFeatures.js:15, 58, 86</span> <span class="ref">AddPetScreen.js:174, 189</span><br><span class="msg">Permite el acceso a la ubicación mientras usas PetCare.</span></div>
+    <div class="card"><h3><span class="ico">🗓️</span>Agenda</h3><p>Fecha inexistente o pasada rechazada; spinner al programar o cancelar; lista vacía explicada.</p><span class="ref">petcareValidation.js:81-115</span> <span class="ref">AgendaScreen.js:199, 208</span><br><span class="msg ok">Todavía no has programado avisos.</span></div>
+    <div class="card"><h3><span class="ico">📭</span>Vacíos y mapa</h3><p>Inicio sin mascotas invita a agregar; si el mapa de Lugares no carga, ofrece abrir OpenStreetMap.</p><span class="ref">HomeScreen.js:69-73</span> <span class="ref">ComingSoonScreen.js:51-77</span><br><span class="msg ok">Aún no tienes mascotas. Usa “Agregar”…</span></div>
+  </div>
+</section>
+
+<!-- =============== 10. C4a ASYNCSTORAGE: RECUPERAR =============== -->
+<section class="slide" id="c4" data-title="AsyncStorage: claves y lectura" data-group="Criterio 4 · AsyncStorage">
+  <div class="top"><span class="chip">Criterio 4 · AsyncStorage <span class="w">20%</span></span><span class="part">1 / 2 · Qué se guarda y cómo se recupera</span><span class="brand">🐾 PetCare</span></div>
+  <h1>Tres claves versionadas, <em>leídas y validadas</em> al iniciar</h1>
+  <div class="cols">
+    <div class="req">
+      <div class="lbl">Exigencia máxima <span class="lvl">Excelente</span></div>
+      <blockquote>“Persistencia correctamente implementada, datos almacenados y recuperados de manera consistente, con uso pertinente dentro del flujo de la app.”</blockquote>
+      <ul class="checks">
+        <li><span><b>Lectura atómica:</b> <code>multiGet</code> de las 3 claves <span class="ref">App.js:54-58</span></span></li>
+        <li><span><b>Validación al leer:</b> <code>parseStoredUser/Pets/Reminders</code> rechazan datos corruptos <span class="ref">App.js:63-67</span></span></li>
+        <li><span><b>Valores por defecto:</b> sin datos se usan la lista de ejemplo y una agenda vacía.</span></li>
+        <li><span><b>Privacidad:</b> no se guardan contraseñas (modo demo, README).</span></li>
+      </ul>
+    </div>
+    <div class="ev">
+      <table class="tbl">
+        <tr><th>Clave</th><th>Contenido</th><th>Uso en el flujo</th></tr>
+        <tr><td>@petcare/session:v1</td><td>Nombre y correo de la sesión</td><td>Decide si se ve Login o Inicio <span class="ref">App.js:197</span></td></tr>
+        <tr><td>@petcare/pets:v1</td><td>Mascotas + URI de foto + coordenadas</td><td>Inicio, estadísticas, detalle, agenda</td></tr>
+        <tr><td>@petcare/reminders:v1</td><td>Recordatorios + <code>notificationId</code></td><td>Agenda; permite cancelar el aviso</td></tr>
+      </table>
+      <div class="codebox">
+        <div class="filebar"><span class="dot"></span>App.js<span class="note">Recuperación con validación y manejo de error</span></div>
+        <pre class="code" data-snip="app-keys-load" data-hl="33-35,54-58,63-67,69-73"></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============== 11. C4b ASYNCSTORAGE: GUARDAR =============== -->
+<section class="slide" data-title="AsyncStorage: guardado y validación" data-group="Criterio 4 · AsyncStorage">
+  <div class="top"><span class="chip">Criterio 4 · AsyncStorage <span class="w">20%</span></span><span class="part">2 / 2 · Guardado consistente</span><span class="brand">🐾 PetCare</span></div>
+  <h1>Cada cambio de estado <em>se persiste solo</em>, en orden</h1>
+  <div class="cols" style="grid-template-columns:minmax(0,1fr) 360px">
+    <div class="ev">
+      <div class="codebox">
+        <div class="tabs"><button class="tab on" data-pane="0">App.js · guardado</button><button class="tab" data-pane="1">petcareValidation.js</button></div>
+        <div class="codepane on"><div class="filebar"><span class="dot"></span>App.js<span class="note">useRef encadena las escrituras: nunca se pisan</span></div><pre class="code" data-snip="app-persist" data-hl="82,87-98,100,102-107"></pre></div>
+        <div class="codepane"><div class="filebar"><span class="dot"></span>src/data/petcareValidation.js<span class="note">Un registro corrupto no entra al estado</span></div><pre class="code" data-snip="parse-pets" data-hl="27-28,40-43,46-47,59-62"></pre></div>
+      </div>
+    </div>
+    <div class="grid" style="align-content:start">
+      <div class="card"><h3><span class="ico">🛡️</span>No sobrescribe antes de leer</h3><p><code>if (!isReady) return</code>: el guardado espera a que termine la carga, así una lista vacía nunca reemplaza los datos guardados.</p><span class="ref">App.js:82</span></div>
+      <div class="card"><h3><span class="ico">🔗</span>Escrituras en cola</h3><p><code>persistenceQueue</code> (useRef) encadena cada <code>multiSet</code> tras el anterior, aunque el estado cambie muy rápido.</p><span class="ref">App.js:47, 87-98</span></div>
+      <div class="card"><h3><span class="ico">🚪</span>Cierre de sesión real</h3><p>Con <code>user = null</code> se ejecuta <code>removeItem</code> de la sesión; las mascotas se conservan.</p><span class="ref">App.js:92-96</span></div>
+      <div class="card"><h3><span class="ico">🧪</span>Probado</h3><p>2 de los 4 tests cubren los datos persistidos: sesión, mascotas (con foto/ubicación) y recordatorios.</p><span class="ref">tests/…test.js:23, 37</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- =============== 12. C5a INTEGRACIÓN =============== -->
+<section class="slide" id="c5" data-title="Integración: flujo" data-group="Criterio 5 · Integración y docs">
+  <div class="top"><span class="chip">Criterio 5 · Integración y documentación <span class="w">15%</span></span><span class="part">1 / 2 · Flujo integrado</span><span class="brand">🐾 PetCare</span></div>
+  <h1>Hooks + API + AsyncStorage en <em>un solo flujo</em></h1>
+  <p class="lead" style="margin-bottom:6px">“Integración sólida de los elementos del APF2, flujo funcional…” · Haz clic en un nodo para seguir su camino.</p>
+  <div class="flow" id="flow">
+    <svg width="1184" height="420" viewBox="0 0 1184 420">
+      <path data-e="storage" d="M200 65 C 340 65, 340 185, 477 185"/>
+      <path data-e="storage" d="M477 215 C 340 215, 340 335, 200 335"/>
+      <path data-e="login" d="M592 150 L592 50 L760 50"/>
+      <path data-e="home" d="M707 180 L760 172"/>
+      <path data-e="agenda" d="M707 222 L760 292"/>
+      <path data-e="api" d="M960 168 C 1040 168, 1092 140, 1092 88"/>
+      <path data-e="agenda" d="M900 332 L920 346"/>
+      <text x="300" y="112">multiGet</text><text x="300" y="300">multiSet</text>
+    </svg>
+    <div class="node k1" data-n="storage" style="left:0;top:30px"><b>💾 AsyncStorage</b>session · pets · reminders<br><span class="ref">App.js:33-35</span></div>
+    <div class="node k1" data-n="storage" style="left:0;top:300px"><b>🛡️ Validación</b>parseStored* al leer<br><span class="ref">petcareValidation.js</span></div>
+    <div class="node center" data-n="core" style="left:477px;top:150px"><b>⚛️ App.js</b>useState (9) · useEffect carga/guardado · useCallback · useRef · enrutado por <code>view</code></div>
+    <div class="node" data-n="login" style="left:760px;top:20px"><b>🔑 LoginScreen</b>valida el correo → <code>handleLogin</code> → user</div>
+    <div class="node" data-n="home" style="left:760px;top:140px"><b>🏠 HomeScreen</b>StatsBar · PetCard · DogDiscoverySection</div>
+    <div class="node" data-n="api" style="left:1000px;top:20px;width:184px"><b>🌐 useDogImages</b>fetch Dog CEO · estados</div>
+    <div class="node" data-n="agenda" style="left:760px;top:265px"><b>🗓️ Agenda / AddPet</b>formularios → <code>onAddReminder</code> / <code>onSave</code></div>
+    <div class="node" data-n="agenda" style="left:880px;top:347px;width:240px"><b>🔔 deviceFeatures</b>notificación, foto y GPS nativos</div>
+  </div>
+  <div class="detail" id="flowDetail">Selecciona un nodo.</div>
+</section>
+
+<!-- =============== 13. C5b DOCUMENTACIÓN =============== -->
+<section class="slide" data-title="Documentación y evidencias" data-group="Criterio 5 · Integración y docs">
+  <div class="top"><span class="chip">Criterio 5 · Integración y documentación <span class="w">15%</span></span><span class="part">2 / 2 · README y evidencias</span><span class="brand">🐾 PetCare</span></div>
+  <h1>README que <em>explica y permite ejecutar</em> el proyecto</h1>
+  <div class="cols" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr)">
+    <div class="req">
+      <div class="lbl">Exigencia máxima <span class="lvl">Excelente</span></div>
+      <blockquote>“…documentación clara, ordenada y suficiente para comprender y ejecutar el proyecto.”</blockquote>
+      <p class="desc">El README debe incluir objetivo, arquitectura básica, tecnologías, instrucciones de ejecución y evidencias.</p>
+      <table class="tbl" style="margin-top:12px">
+        <tr><th>Exige</th><th>Sección del README.md</th></tr>
+        <tr><td>Objetivo</td><td>Introducción + “Funcionalidades implementadas” <span class="ref">l.1-16</span></td></tr>
+        <tr><td>Tecnologías</td><td>“Tecnologías” <span class="ref">l.18</span></td></tr>
+        <tr><td>Ejecución</td><td>“Requisitos y ejecución” · <code>npm ci && npm start</code> <span class="ref">l.27</span></td></tr>
+        <tr><td>Arquitectura</td><td>“Organización básica”, árbol de <code>src/</code> <span class="ref">l.40</span></td></tr>
+        <tr><td>API · datos</td><td>“API: Dog CEO” y “Persistencia y privacidad” <span class="ref">l.57, 72</span></td></tr>
+        <tr><td>Evidencias</td><td>“Pruebas y validación” y “Perfil APK con EAS Build” <span class="ref">l.86, 109</span></td></tr>
+      </table>
+    </div>
+    <div class="ev">
+      <div class="evhead">Evidencias verificables</div>
+      <div class="json" style="flex:none">$ npm test
+<span class="s">✔</span> validates saved user and pet records, including optional device metadata
+<span class="s">✔</span> validates saved reminders and rejects malformed records
+<span class="s">✔</span> validates the public API response and filters untrusted image URLs
+<span class="s">✔</span> parses valid future reminder date/time and rejects invalid or past input
+<span class="c">ℹ tests 4 · pass 4 · fail 0</span></div>
+      <div class="json" style="flex:none">$ npx eas-cli build:list --platform android
+<span class="m">Status</span>        <span class="s">finished</span>
+<span class="m">Profile</span>       preview  (distribution: internal · APK)
+<span class="m">SDK Version</span>   57.0.0   ·  Version 1.0.0 (code 1)
+<span class="m">Finished at</span>   15/10/2026, 10:56 p. m.
+<span class="m">Build ID</span>      cf79b6ad-9b54-4a5a-9358-b6abe65ca13b</div>
+      <div class="card"><h3><span class="ico">⚙️</span>Configuración versionada</h3><p><span class="ref">eas.json</span> define el perfil APK; <span class="ref">app.json</span> declara permisos mínimos y bloquea micrófono y almacenamiento externo.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- =============== 14. CIERRE =============== -->
+<section class="slide" data-title="Resumen" data-group="Cierre">
+  <div class="top"><span class="chip">Resumen</span><span class="brand">🐾 PetCare</span></div>
+  <h1>Cada exigencia máxima, <em>con su evidencia</em></h1>
+  <table class="tbl" style="margin-top:20px;position:relative">
+    <tr><th style="width:250px">Criterio</th><th>Exigencia máxima (Excelente)</th><th>Evidencia principal</th><th style="width:60px">Peso</th></tr>
+    <tr class="click" data-go="c1"><td>1 · Hooks</td><td>Hooks consistentes, estado bien actualizado, efectos correctos</td><td>6 tipos de hook · hook propio <span class="ref">useDogImages</span> · efectos con cleanup</td><td>20%</td></tr>
+    <tr class="click" data-go="c2"><td>2 · API</td><td>Consumo correcto, peticiones bien manejadas, datos útiles</td><td>Timeout 12 s · <span class="ref">response.ok</span> · contrato validado · cuadrícula con raza</td><td>25%</td></tr>
+    <tr class="click" data-go="c3"><td>3 · Estados y UX</td><td>Loading, error y vacío claros</td><td>4 estados en DogDiscovery + arranque, guardado, permisos, agenda</td><td>15%</td></tr>
+    <tr class="click" data-go="c4"><td>4 · AsyncStorage</td><td>Guardar y recuperar de forma consistente, dentro del flujo</td><td>3 claves · <span class="ref">multiGet</span>/<span class="ref">multiSet</span> · validación · cola con useRef</td><td>20%</td></tr>
+    <tr class="click" data-go="c5"><td>5 · Integración y docs</td><td>Flujo integrado + README completo</td><td>App.js orquesta todo · README · 4/4 tests · APK EAS</td><td>15%</td></tr>
+  </table>
+  <div class="grid" style="grid-template-columns:repeat(3,1fr);margin-top:18px;position:relative">
+    <div class="card"><h3><span class="ico">🧩</span>1 709 líneas en src/</h3><p>7 pantallas, 4 componentes, 1 hook, 1 servicio y 1 módulo de validación.</p></div>
+    <div class="card"><h3><span class="ico">✅</span>4 / 4 pruebas</h3><p><code>npm test</code> con <code>node --test</code>, sin dependencias extra.</p></div>
+    <div class="card"><h3><span class="ico">📱</span>APK instalable</h3><p>EAS Build, perfil <code>preview</code>, listo para probar en Android.</p></div>
+  </div>
+</section>
+
+</div></div>
+
+<div id="ui">
+  <button id="prevB" title="Anterior (←)">‹</button>
+  <span class="cnt" id="cnt">1 / 14</span>
+  <button id="nextB" title="Siguiente (→)">›</button>
+  <button id="ovB" title="Índice (O)">☰</button>
+  <button id="fsB" title="Pantalla completa (F)">⛶</button>
+</div>
+<div id="ov"><h2>Índice de diapositivas</h2><div class="list" id="ovList"></div></div>
+
+<!-- ================= Fragmentos de código (copiados del repositorio) ================= -->
+<script type="text/x-code" id="dog-hook" data-start="6" data-file="src/hooks/useDogImages.js">
+export default function useDogImages() {
+  const [images, setImages] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [requestNumber, setRequestNumber] = useState(0);
+  const retry = useCallback(() => setRequestNumber((current) => current + 1), []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    let isCurrent = true;
+    const timeoutId = setTimeout(() => controller.abort(), 12000);
+
+    async function loadImages() {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch(DOG_API_URL, { signal: controller.signal });
+        if (!response.ok) {
+          throw new Error(`Dog CEO respondió con HTTP ${response.status}.`);
+        }
+
+        const validImages = parseDogImageResponse(await response.json());
+
+        if (isCurrent) setImages(validImages);
+      } catch (requestError) {
+        if (!isCurrent) return;
+        console.error('No se pudieron cargar las imágenes de Dog CEO.', requestError);
+        setImages([]);
+        setError('No se pudieron cargar las imágenes. Revisa tu conexión e inténtalo de nuevo.');
+      } finally {
+        clearTimeout(timeoutId);
+        if (isCurrent) setIsLoading(false);
+      }
+    }
+
+    loadImages();
+    return () => {
+      isCurrent = false;
+      clearTimeout(timeoutId);
+      controller.abort();
+    };
+  }, [requestNumber]);
+
+  return { images, isLoading, error, retry };
+}
+</script>
+<script type="text/x-code" id="app-persist" data-start="81" data-file="App.js">
+  useEffect(() => {
+    if (!isReady) return undefined;
+
+    let isCurrent = true;
+    const persistData = async () => {
+      try {
+        const currentSave = persistenceQueue.current.catch(() => {}).then(async () => {
+          await AsyncStorage.multiSet([
+            [PETS_STORAGE_KEY, JSON.stringify(pets)],
+            [REMINDERS_STORAGE_KEY, JSON.stringify(reminders)],
+          ]);
+          if (user) {
+            await AsyncStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+          } else {
+            await AsyncStorage.removeItem(USER_STORAGE_KEY);
+          }
+        });
+        persistenceQueue.current = currentSave.catch(() => {});
+        await currentSave;
+        if (isCurrent) setStorageError(null);
+      } catch (error) {
+        console.error('No se pudieron guardar los datos locales de PetCare.', error);
+        if (isCurrent) {
+          setStorageError(
+            'No se pudieron guardar los cambios en este dispositivo. Comprueba el espacio disponible.',
+          );
+        }
+      }
+    };
+
+    persistData();
+    return () => {
+      isCurrent = false;
+    };
+  }, [isReady, pets, reminders, user]);
+</script>
+<script type="text/x-code" id="app-load" data-start="47" data-file="App.js">
+  const persistenceQueue = useRef(Promise.resolve());
+
+  const loadSavedData = useCallback(async () => {
+    setIsReady(false);
+    setLoadError(null);
+
+    try {
+      const storedValues = await AsyncStorage.multiGet([
+        USER_STORAGE_KEY,
+        PETS_STORAGE_KEY,
+        REMINDERS_STORAGE_KEY,
+      ]);
+      const storedUser = storedValues[0][1];
+      const storedPets = storedValues[1][1];
+      const storedReminders = storedValues[2][1];
+
+      setUser(storedUser === null ? null : parseStoredUser(storedUser));
+      setPets(storedPets === null ? petList : parseStoredPets(storedPets));
+      setReminders(
+        storedReminders === null ? [] : parseStoredReminders(storedReminders),
+      );
+      setIsReady(true);
+    } catch (error) {
+      console.error('No se pudieron recuperar los datos locales de PetCare.', error);
+      setLoadError(
+        'No se pudieron recuperar tus datos guardados. Comprueba el almacenamiento e inténtalo de nuevo.',
+      );
+    }
+  }, []);
+
+  useEffect(() => {
+    loadSavedData();
+  }, [loadSavedData]);
+</script>
+<script type="text/x-code" id="app-keys-load" data-start="33" data-file="App.js">
+const USER_STORAGE_KEY = '@petcare/session:v1';
+const PETS_STORAGE_KEY = '@petcare/pets:v1';
+const REMINDERS_STORAGE_KEY = '@petcare/reminders:v1';
+// … (líneas 36-48: componente App y sus estados)
+  const loadSavedData = useCallback(async () => {
+    setIsReady(false);
+    setLoadError(null);
+
+    try {
+      const storedValues = await AsyncStorage.multiGet([
+        USER_STORAGE_KEY,
+        PETS_STORAGE_KEY,
+        REMINDERS_STORAGE_KEY,
+      ]);
+      const storedUser = storedValues[0][1];
+      const storedPets = storedValues[1][1];
+      const storedReminders = storedValues[2][1];
+
+      setUser(storedUser === null ? null : parseStoredUser(storedUser));
+      setPets(storedPets === null ? petList : parseStoredPets(storedPets));
+      setReminders(
+        storedReminders === null ? [] : parseStoredReminders(storedReminders),
+      );
+      setIsReady(true);
+    } catch (error) {
+      console.error('No se pudieron recuperar los datos locales de PetCare.', error);
+      setLoadError(
+        'No se pudieron recuperar tus datos guardados. Comprueba el almacenamiento e inténtalo de nuevo.',
+      );
+    }
+  }, []);
+</script>
+<script type="text/x-code" id="dog-parse" data-start="65" data-file="src/data/petcareValidation.js">
+export function parseDogImageResponse(payload) {
+  if (
+    !payload ||
+    payload.status !== 'success' ||
+    !Array.isArray(payload.message)
+  ) {
+    throw new Error('La respuesta de Dog CEO no tiene el formato esperado.');
+  }
+
+  return payload.message.filter(
+    (url) =>
+      typeof url === 'string' &&
+      url.startsWith('https://images.dog.ceo/'),
+  );
+}
+</script>
+<script type="text/x-code" id="dog-test" data-start="49" data-file="tests/petcareValidation.test.js">
+test('validates the public API response and filters untrusted image URLs', () => {
+  assert.deepEqual(
+    parseDogImageResponse({
+      status: 'success',
+      message: ['https://images.dog.ceo/breeds/hound/1.jpg', 'https://example.com/2.jpg'],
+    }),
+    ['https://images.dog.ceo/breeds/hound/1.jpg'],
+  );
+  assert.throws(() => parseDogImageResponse({ status: 'error', message: [] }), /formato esperado/);
+});
+</script>
+<script type="text/x-code" id="dog-render" data-start="13" data-file="src/components/DogDiscoverySection.js">
+function getBreedName(imageUrl) {
+  const pathParts = imageUrl.split('/');
+  const breed = pathParts[pathParts.length - 2];
+  return breed ? breed.replace(/-/g, ' ') : 'Raza por descubrir';
+}
+
+export default function DogDiscoverySection() {
+  const { images, isLoading, error, retry } = useDogImages();
+// … (líneas 21-67: encabezado y estados de carga/error/vacío)
+      ) : (
+        <View style={styles.imageGrid}>
+          {images.map((imageUrl) => (
+            <View key={imageUrl} style={styles.imageCard}>
+              <Image
+                source={{ uri: imageUrl }}
+                style={styles.image}
+                accessibilityLabel={`Perro de raza ${getBreedName(imageUrl)}`}
+              />
+              <Text numberOfLines={1} style={styles.breedName}>
+                {getBreedName(imageUrl)}
+              </Text>
+            </View>
+          ))}
+        </View>
+      )}
+</script>
+<script type="text/x-code" id="dog-states" data-start="29" data-file="src/components/DogDiscoverySection.js">
+        {!isLoading && (
+          <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel="Actualizar imágenes de perros"
+            onPress={retry}
+            style={styles.refreshButton}
+          >
+            <Text style={styles.refreshText}>Actualizar</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {isLoading ? (
+        <View style={styles.messageCard} accessibilityRole="progressbar">
+          <ActivityIndicator color={colors.primary} />
+          <Text style={styles.messageText}>Cargando imágenes…</Text>
+        </View>
+      ) : error ? (
+        <View style={styles.messageCard} accessibilityRole="alert">
+          <Text style={styles.messageText}>{error}</Text>
+          <TouchableOpacity
+            accessibilityRole="button"
+            onPress={retry}
+            style={styles.retryButton}
+          >
+            <Text style={styles.retryText}>Reintentar</Text>
+          </TouchableOpacity>
+        </View>
+      ) : images.length === 0 ? (
+        <View style={styles.messageCard}>
+          <Text style={styles.messageText}>La API no devolvió imágenes esta vez.</Text>
+          <TouchableOpacity
+            accessibilityRole="button"
+            onPress={retry}
+            style={styles.retryButton}
+          >
+            <Text style={styles.retryText}>Volver a intentar</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <View style={styles.imageGrid}>
+          {images.map((imageUrl) => (
+            <View key={imageUrl} style={styles.imageCard}>
+              <Image
+                source={{ uri: imageUrl }}
+                style={styles.image}
+                accessibilityLabel={`Perro de raza ${getBreedName(imageUrl)}`}
+              />
+              <Text numberOfLines={1} style={styles.breedName}>
+                {getBreedName(imageUrl)}
+              </Text>
+            </View>
+          ))}
+        </View>
+      )}
+</script>
+<script type="text/x-code" id="parse-pets" data-start="27" data-file="src/data/petcareValidation.js">
+export function parseStoredPets(value) {
+  const pets = parseStoredJson(value, 'La lista de mascotas guardada no tiene un formato válido.');
+  const isValidPet = (pet) =>
+    pet &&
+    typeof pet === 'object' &&
+    (typeof pet.id === 'string' || typeof pet.id === 'number') &&
+    requiredPetFields.every((field) => isNonEmptyString(pet[field])) &&
+    (pet.photoUri === undefined || typeof pet.photoUri === 'string') &&
+    (pet.location === undefined ||
+      (pet.location &&
+        Number.isFinite(pet.location.latitude) &&
+        Number.isFinite(pet.location.longitude)));
+
+  if (!Array.isArray(pets) || !pets.every(isValidPet)) {
+    throw new Error('La lista de mascotas guardada no tiene un formato válido.');
+  }
+  return pets;
+}
+
+export function parseStoredReminders(value) {
+  const reminders = parseStoredJson(value, 'La agenda guardada no tiene un formato válido.');
+  const isValidReminder = (reminder) =>
+    reminder &&
+    typeof reminder === 'object' &&
+    typeof reminder.id === 'string' &&
+    typeof reminder.petId === 'string' &&
+    isNonEmptyString(reminder.title) &&
+    typeof reminder.date === 'string' &&
+    Number.isFinite(Date.parse(reminder.date)) &&
+    (reminder.notificationId === null ||
+      typeof reminder.notificationId === 'string');
+
+  if (!Array.isArray(reminders) || !reminders.every(isValidReminder)) {
+    throw new Error('La agenda guardada no tiene un formato válido.');
+  }
+  return reminders;
+}
+</script>
+<script type="text/x-code" id="h-state" data-start="38" data-file="App.js">
+  const [isReady, setIsReady] = useState(false);
+  const [loadError, setLoadError] = useState(null);
+  const [storageError, setStorageError] = useState(null);
+  const [user, setUser] = useState(null);
+  const [pets, setPets] = useState(petList);
+  const [reminders, setReminders] = useState([]);
+  const [view, setView] = useState('home');
+  const [activeTab, setActiveTab] = useState('home');
+  const [selectedPet, setSelectedPet] = useState(null);
+// … (líneas 47-142)
+  function handleAddPet(pet) {
+    setPets((currentPets) => [...currentPets, pet]);
+    setView('home');
+    setActiveTab('home');
+  }
+</script>
+<script type="text/x-code" id="h-effect" data-start="77" data-file="App.js">
+  useEffect(() => {
+    loadSavedData();
+  }, [loadSavedData]);
+
+  useEffect(() => {
+    if (!isReady) return undefined;
+    // … guarda pets, reminders y user con AsyncStorage (líneas 83-111)
+    return () => {
+      isCurrent = false;
+    };
+  }, [isReady, pets, reminders, user]);
+</script>
+<script type="text/x-code" id="h-cb" data-start="49" data-file="App.js">
+  const loadSavedData = useCallback(async () => {
+    // … lee AsyncStorage (líneas 50-74)
+  }, []);
+// … (líneas 76-182)
+            <TouchableOpacity style={styles.retryButton} onPress={loadSavedData}>
+</script>
+<script type="text/x-code" id="h-ref" data-start="47" data-file="App.js">
+  const persistenceQueue = useRef(Promise.resolve());
+// … (líneas 48-86)
+        const currentSave = persistenceQueue.current.catch(() => {}).then(async () => {
+// … (líneas 88-97: multiSet, setItem / removeItem)
+        persistenceQueue.current = currentSave.catch(() => {});
+</script>
+<script type="text/x-code" id="h-memo" data-start="44" data-file="src/screens/AgendaScreen.js">
+  const selectedPet = useMemo(
+    () => pets.find((pet) => String(pet.id) === selectedPetId),
+    [pets, selectedPetId],
+  );
+</script>
+<script type="text/x-code" id="h-custom" data-start="19" data-file="src/components/DogDiscoverySection.js">
+export default function DogDiscoverySection() {
+  const { images, isLoading, error, retry } = useDogImages();
+</script>
+
+<script>
+(function(){
+  /* ---------- resaltado de sintaxis ---------- */
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const RE = /(\/\/.*$)|('(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*"|`(?:\\.|[^`\\])*`)|\b(const|let|function|return|if|else|async|await|try|catch|finally|throw|new|export|default|import|from|null|undefined|true|false|typeof)\b|\b(\d+)\b|(<\/?[A-Z][A-Za-z.]*)|\b([A-Za-z_]\w*)(?=\()/g;
+  function hiLine(line){
+    let out='',last=0,m; RE.lastIndex=0;
+    while((m=RE.exec(line))){
+      out+=esc(line.slice(last,m.index));
+      const cls=m[1]?'c':m[2]?'s':m[3]?'k':m[4]?'m':m[5]?'t':'f';
+      out+='<span class="'+cls+'">'+esc(m[0])+'</span>';
+      last=RE.lastIndex; if(m[0].length===0) RE.lastIndex++;
+    }
+    return out+esc(line.slice(last));
+  }
+  function parseRanges(s){
+    const set=new Set(); if(!s) return set;
+    s.split(',').forEach(p=>{const [a,b]=p.split('-').map(Number); for(let i=a;i<=(b||a);i++) set.add(i);});
+    return set;
+  }
+  function render(pre,id,hl){
+    const src=document.getElementById(id);
+    const lines=src.textContent.replace(/^\n/,'').replace(/\s+$/,'').split('\n');
+    let n=Number(src.dataset.start), ranges=parseRanges(hl), html='';
+    lines.forEach(l=>{
+      const gap=/^\s*\/\/ … .*líneas (\d+)-(\d+)/.exec(l), isNote=!!gap;
+      html+='<span class="ln'+(ranges.has(n)?' hl':'')+'" data-n="'+n+'"><span class="n">'+(isNote?'⋮':n)+'</span>'+hiLine(l)+'</span>';
+      n = isNote ? Number(gap[2])+1 : n+1;
+    });
+    pre.innerHTML=html;
+    const first=pre.querySelector('.hl');
+    if(first) requestAnimationFrame(()=>{pre.scrollTop=Math.max(0,first.offsetTop-pre.clientHeight*0.25);});
+  }
+  document.querySelectorAll('pre.code[data-snip]').forEach(p=>render(p,p.dataset.snip,p.dataset.hl));
+
+  /* pestañas de código */
+  document.querySelectorAll('.codebox').forEach(box=>{
+    const tabs=box.querySelectorAll('.tab'), panes=box.querySelectorAll('.codepane');
+    tabs.forEach(t=>t.addEventListener('click',()=>{
+      tabs.forEach(x=>x.classList.toggle('on',x===t));
+      panes.forEach((p,i)=>{p.classList.toggle('on',i==t.dataset.pane);
+        if(i==t.dataset.pane){const pre=p.querySelector('pre');render(pre,pre.dataset.snip,pre.dataset.hl);}});
+    }));
+  });
+
+  /* tabla de hooks */
+  const ht=document.getElementById('hookTable');
+  const hookBox=ht.parentElement.querySelector('.codebox');
+  const hookNotes={'h-state':'Estado inicial + actualización funcional','h-effect':'Dos efectos: montaje y guardado reactivo','h-cb':'Referencia estable para efecto y botón','h-ref':'Valor mutable que persiste entre renders','h-memo':'Valor derivado memorizado','h-custom':'Consumo del hook propio'};
+  const hookHl={'h-state':'38-46,144','h-effect':'77-79,81,115','h-cb':'49,183','h-ref':'47,87,98','h-memo':'44-47','h-custom':'20'};
+  function pickHook(row){
+    ht.querySelectorAll('tr.click').forEach(r=>r.style.outline='');
+    row.style.outline='2px solid var(--primary)';
+    const id=row.dataset.snip, src=document.getElementById(id);
+    hookBox.querySelector('.fname').textContent=src.dataset.file;
+    hookBox.querySelector('.note').textContent=hookNotes[id];
+    render(hookBox.querySelector('pre'),id,hookHl[id]);
+  }
+  ht.querySelectorAll('tr.click').forEach(r=>r.addEventListener('click',()=>pickHook(r)));
+  pickHook(ht.querySelector('tr.click'));
+
+  /* ---------- API Dog CEO real (misma lógica que la app) ---------- */
+  const DOG_API_URL='https://dog.ceo/api/breeds/image/random/6';
+  function parseDogImageResponse(payload){
+    if(!payload||payload.status!=='success'||!Array.isArray(payload.message)) throw new Error('La respuesta de Dog CEO no tiene el formato esperado.');
+    return payload.message.filter(u=>typeof u==='string'&&u.startsWith('https://images.dog.ceo/'));
+  }
+  function getBreedName(u){const p=u.split('/');const b=p[p.length-2];return b?b.replace(/-/g,' '):'Raza por descubrir';}
+  let cachedImages=null;
+  const ui={
+    loading:()=>'<div class="mcard"><div class="spin"></div>Cargando imágenes…</div>',
+    error:(msg)=>'<div class="mcard">'+(msg||'No se pudieron cargar las imágenes. Revisa tu conexión e inténtalo de nuevo.')+'<button class="rbtn" data-retry>Reintentar</button></div>',
+    empty:()=>'<div class="mcard">La API no devolvió imágenes esta vez.<button class="rbtn" data-retry>Volver a intentar</button></div>',
+    ok:(imgs)=>'<div class="dgrid">'+imgs.map(u=>'<div class="dimg"><img src="'+u+'" alt="Perro de raza '+getBreedName(u)+'" loading="lazy"><div class="bn">'+getBreedName(u)+'</div></div>').join('')+'</div>',
+    okDemo:()=>'<div class="dgrid">'+[['🐕','hound afghan'],['🐶','beagle'],['🦮','labrador'],['🐩','poodle toy'],['🐕‍🦺','germanshepherd'],['🐶','shiba']].map(([e,b])=>'<div class="dimg"><div class="ph">'+e+'</div><div class="bn">'+b+'</div></div>').join('')+'</div>'
+  };
+  const liveBody=document.getElementById('liveBody'), liveJson=document.getElementById('liveJson'), liveStatus=document.getElementById('liveStatus'), liveRefresh=document.getElementById('liveRefresh');
+  let liveReq=0;
+  async function loadLive(){
+    const my=++liveReq, controller=new AbortController(), timeoutId=setTimeout(()=>controller.abort(),12000);
+    liveRefresh.style.visibility='hidden'; liveBody.innerHTML=ui.loading();
+    liveStatus.className='live'; liveStatus.innerHTML='<i></i>GET '+DOG_API_URL.replace('https://','');
+    try{
+      const res=await fetch(DOG_API_URL,{signal:controller.signal});
+      if(!res.ok) throw new Error('Dog CEO respondió con HTTP '+res.status+'.');
+      const payload=await res.json();
+      if(my!==liveReq) return;
+      liveJson.innerHTML=hiJson(payload);
+      const imgs=parseDogImageResponse(payload);
+      cachedImages=imgs;
+      liveBody.innerHTML=imgs.length?ui.ok(imgs):ui.empty();
+      liveStatus.innerHTML='<i></i>HTTP '+res.status+' · '+imgs.length+' imágenes válidas';
+    }catch(e){
+      if(my!==liveReq) return;
+      liveBody.innerHTML=ui.error();
+      liveStatus.className='live err'; liveStatus.innerHTML='<i></i>'+(e.name==='AbortError'?'Tiempo límite (12 s) superado':'Sin conexión: se muestra el estado de error');
+      liveJson.textContent='// '+e.message;
+    }finally{clearTimeout(timeoutId); if(my===liveReq) liveRefresh.style.visibility='';}
+  }
+  function hiJson(o){
+    return esc(JSON.stringify(o,null,2)).replace(/(&quot;|")(https:[^"]*?)(")/g,'<span class="s">"$2"</span>').replace(/"(message|status)":/g,'<span class="m">"$1"</span>:').replace(/"success"/g,'<span class="s">"success"</span>');
+  }
+  liveRefresh.addEventListener('click',loadLive);
+  liveBody.addEventListener('click',e=>{if(e.target.closest('[data-retry]')) loadLive();});
+  let liveLoaded=false;
+
+  /* ---------- simulador de estados ---------- */
+  const simBody=document.getElementById('simBody'), simCode=document.getElementById('simCode'), simNote=document.getElementById('simNote'), simRefresh=document.getElementById('simRefresh'), stDetail=document.getElementById('stateDetail');
+  const states={
+    loading:{hl:'41-45',note:'isLoading → spinner; “Actualizar” se oculta (línea 29)',d:'<b>Carga:</b> <code>ActivityIndicator</code> + “Cargando imágenes…”, con <code>accessibilityRole="progressbar"</code>. El botón Actualizar se oculta para no lanzar peticiones duplicadas.'},
+    error:{hl:'46-56',note:'error → mensaje + Reintentar',d:'<b>Error:</b> sin red, HTTP no-OK, JSON inválido o timeout de 12 s. Mensaje con <code>role="alert"</code> y botón <b>Reintentar</b> → <code>retry()</code>.'},
+    empty:{hl:'57-67',note:'images.length === 0 → vacío explicado',d:'<b>Vacío:</b> si la respuesta es válida pero ninguna URL pasa el filtro, se explica y se ofrece <b>Volver a intentar</b>.'},
+    ok:{hl:'68-82',note:'éxito → cuadrícula con raza',d:'<b>Éxito:</b> cuadrícula de imágenes con el nombre de la raza y el botón <b>Actualizar</b> visible.'}
+  };
+  function setState(st){
+    document.querySelectorAll('#stateSeg button').forEach(b=>b.classList.toggle('on',b.dataset.st===st));
+    simBody.innerHTML= st==='ok' ? (cachedImages&&cachedImages.length?ui.ok(cachedImages):ui.okDemo()) : ui[st]();
+    simRefresh.style.visibility= st==='loading'?'hidden':'';
+    render(simCode,'dog-states',(st==='loading'?'29,':'')+states[st].hl);
+    simNote.textContent=states[st].note; stDetail.innerHTML=states[st].d;
+  }
+  document.querySelectorAll('#stateSeg button').forEach(b=>b.addEventListener('click',()=>setState(b.dataset.st)));
+  simBody.addEventListener('click',e=>{if(e.target.closest('[data-retry]')){setState('loading');setTimeout(()=>setState('ok'),900);}});
+  simRefresh.addEventListener('click',()=>{setState('loading');setTimeout(()=>setState('ok'),900);});
+  setState('loading');
+
+  /* ---------- flujo de integración ---------- */
+  const flow=document.getElementById('flow'), flowDetail=document.getElementById('flowDetail');
+  const flowInfo={
+    storage:{n:['storage','core'],e:['storage'],t:'<b>AsyncStorage ⇄ App.js:</b> al montar, <code>useEffect</code> llama a <code>loadSavedData</code> (multiGet + validación). Cada cambio en <code>pets</code>, <code>reminders</code> o <code>user</code> dispara el efecto de guardado (multiSet).'},
+    core:{n:['core','storage','login','home','agenda'],e:['storage','login','home','agenda'],t:'<b>App.js orquesta:</b> guarda el estado compartido, decide la pantalla según <code>user</code> y <code>view</code>, y pasa datos y callbacks por props a cada pantalla.'},
+    login:{n:['login','core'],e:['login'],t:'<b>Login → estado → almacenamiento:</b> <code>handleLogin</code> hace <code>setUser</code>; el efecto persiste la sesión, así al reabrir la app se entra directo al Inicio.'},
+    home:{n:['home','api','core'],e:['home','api'],t:'<b>Inicio:</b> muestra mascotas persistidas (StatsBar y PetCard) junto a datos remotos de Dog CEO mediante el hook <code>useDogImages</code>.'},
+    api:{n:['api','home'],e:['home','api'],t:'<b>useDogImages:</b> hook propio con fetch, timeout, validación y los 4 estados; lo consume <code>DogDiscoverySection</code> dentro de HomeScreen.'},
+    agenda:{n:['agenda','core','storage'],e:['agenda','storage'],t:'<b>Agenda / AddPet:</b> el formulario valida, <code>deviceFeatures</code> programa la notificación o toma la foto/GPS, <code>onAddReminder</code>/<code>onSave</code> actualizan el estado y el efecto lo guarda en AsyncStorage.'}
+  };
+  flow.querySelectorAll('.node').forEach(n=>n.addEventListener('click',()=>{
+    const info=flowInfo[n.dataset.n];
+    flow.classList.add('dim');
+    flow.querySelectorAll('.node').forEach(x=>x.classList.toggle('on',info.n.includes(x.dataset.n)));
+    flow.querySelectorAll('path').forEach(p=>p.classList.toggle('on',info.e.includes(p.dataset.e)));
+    flowDetail.innerHTML=info.t;
+  }));
+
+  /* ---------- navegación ---------- */
+  const slides=[...document.querySelectorAll('.slide')];
+  const cnt=document.getElementById('cnt'), bar=document.getElementById('bar'), ov=document.getElementById('ov'), ovList=document.getElementById('ovList');
+  let cur=0;
+  function go(i){
+    i=Math.max(0,Math.min(slides.length-1,i));
+    slides.forEach((s,k)=>{s.classList.toggle('active',k===i);s.classList.toggle('prev',k<i);});
+    cur=i; cnt.textContent=(i+1)+' / '+slides.length; bar.style.width=((i+1)/slides.length*100)+'%';
+    try{history.replaceState(null,'','#'+(i+1));}catch(e){}
+    if(slides[i].querySelector('#liveBody')&&!liveLoaded){liveLoaded=true;loadLive();}
+    ovList.querySelectorAll('button').forEach((b,k)=>b.classList.toggle('cur',k===i));
+  }
+  slides.forEach((s,k)=>{const b=document.createElement('button');b.innerHTML='<small>'+(k+1)+' · '+s.dataset.group+'</small><span>'+s.dataset.title+'</span>';b.onclick=()=>{ov.classList.remove('on');go(k);};ovList.appendChild(b);});
+  document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(slides.indexOf(document.getElementById(b.dataset.go)))));
+  document.getElementById('prevB').onclick=()=>go(cur-1);
+  document.getElementById('nextB').onclick=()=>go(cur+1);
+  document.getElementById('ovB').onclick=()=>ov.classList.toggle('on');
+  document.getElementById('fsB').onclick=()=>{ if(!document.fullscreenElement) document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen(); else document.exitFullscreen(); };
+  ov.addEventListener('click',e=>{if(e.target===ov) ov.classList.remove('on');});
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();go(cur+1);}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(cur-1);}
+    else if(e.key==='Home') go(0); else if(e.key==='End') go(slides.length-1);
+    else if(e.key==='o'||e.key==='O') ov.classList.toggle('on');
+    else if(e.key==='f'||e.key==='F') document.getElementById('fsB').click();
+    else if(e.key==='Escape') ov.classList.remove('on');
+  });
+  let tx=null;
+  document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+  document.addEventListener('touchend',e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>60)go(cur+(dx<0?1:-1));tx=null;});
+
+  /* escalado 16:9 */
+  const stage=document.getElementById('stage');
+  function fit(){const s=Math.min(innerWidth/1280,(innerHeight-56)/720);stage.style.transform='scale('+s+')';}
+  addEventListener('resize',fit); fit();
+  const h=parseInt(location.hash.slice(1),10); go(isNaN(h)?0:h-1);
+})();
+</script>
+</body>
+</html>
