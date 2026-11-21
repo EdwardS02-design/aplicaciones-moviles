@@ -1,13 +1,20 @@
 {
   "name": "petcare",
   "version": "1.0.0",
+<<<<<<< HEAD
   "main": "index.js",
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
+=======
+  "type": "module",
+  "main": "index.js",
+  "dependencies": {
+>>>>>>> 2d4de299d9828589ef17ec856a01c0547f5c70cd
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-navigation/bottom-tabs": "^7.18.18",
     "@react-navigation/native": "^7.3.18",
     "@react-navigation/native-stack": "^7.18.10",
+<<<<<<< HEAD
     "@supabase/supabase-js": "^2.117.2",
     "expo": "^58.0.0",
     "expo-constants": "~58.0.16",
@@ -30,17 +37,46 @@
     "react-native-url-polyfill": "^4.0.0",
     "react-native-web": "^0.21.4",
     "react-native-worklets": "0.13.0"
+=======
+    "expo": "~57.0.27",
+    "expo-file-system": "~57.0.7",
+    "expo-image-picker": "~57.0.20",
+    "expo-location": "~57.0.20",
+    "expo-notifications": "~57.0.22",
+    "expo-sensors": "~57.0.3",
+    "expo-status-bar": "~57.0.1",
+    "expo-system-ui": "~57.0.4",
+    "nativewind": "4.2.7",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-reanimated": "4.5.1",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "~4.26.0",
+    "react-native-web": "^0.21.2",
+    "react-native-webview": "13.16.1",
+    "react-native-worklets": "0.10.1"
+>>>>>>> 2d4de299d9828589ef17ec856a01c0547f5c70cd
   },
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+<<<<<<< HEAD
     "lugares": "node servidor/index.js"
   },
   "private": true,
   "devDependencies": {
     "babel-preset-expo": "~58.0.0",
     "tailwindcss": "^3.4.17"
+=======
+    "test": "node --test"
+  },
+  "private": true,
+  "devDependencies": {
+    "babel-preset-expo": "^57.0.14",
+    "tailwindcss": "^3.4.19"
+>>>>>>> 2d4de299d9828589ef17ec856a01c0547f5c70cd
   }
 }

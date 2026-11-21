@@ -1,4 +1,5 @@
 export const colors = {
+<<<<<<< HEAD
   bg: '#eef3ef',
   bgDashboard: '#eef3ef',
   glowGreen: '#d6f1e8',
@@ -15,4 +16,21 @@ export const colors = {
   statsBg: '#6ec4b3',
   white: '#fff',
   naranjaCita: '#d9853b',
+=======
+  bg: '#e8ece8',
+  bgDashboard: '#e9ece9',
+  glowGreen: '#d6f1e8',
+  glowYellow: '#eef7db',
+  card: '#f7f9f7',
+  cardBorder: '#eef2ef',
+  brand: '#2b7a6d',
+  textDark: '#1d2a2b',
+  textMuted: '#64726d',
+  inputBg: '#edf3ef',
+  inputBorder: '#dfeae5',
+  primary: '#2db7a0',
+  primaryDark: '#135a51',
+  statsBg: '#5fc4b3',
+  white: '#fff',
+>>>>>>> 2d4de299d9828589ef17ec856a01c0547f5c70cd
 };
